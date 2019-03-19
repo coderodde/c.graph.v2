@@ -1,6 +1,7 @@
 #include "my_assert.h"
 #include "queue.h"
 #include "unordered_map.h"
+#include "unordered_set.h"
 #include <stdio.h>
 #define _C_GRAPH_V2_TEST
 
@@ -12,6 +13,7 @@ static void test_all()
     queue_test();
     list_test();
     unordered_map_test();
+    unordered_set_test();
     PRINT_TEST_RESULTS;
     puts("--- Done testing ---");
 }

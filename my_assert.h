@@ -43,7 +43,7 @@ static void print_test_results()
 
         if (total_assertion_errors == 0)
         {
-            puts("Tests pass!");
+            puts("TESTS PASSED!");
         }
         else
         {

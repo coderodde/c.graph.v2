@@ -610,7 +610,7 @@ static void unordered_map_test_remove()
                                              int_equals);
     int i;
 
-    puts("unordered_map_test_remove()");
+    puts("        unordered_map_test_remove()");
 
     for (i = 0; i < 100; i++)
     {
