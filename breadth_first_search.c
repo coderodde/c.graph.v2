@@ -1,15 +1,9 @@
 #include "breadth_first_search.h"
+#include "directed_graph_node.h"
 #include "queue.h"
 #include "list.h"
 #include "unordered_map.h"
-
-typedef struct child_node_iterator {
-    void* state;
-    void  (*child_node_iterator_init)     (struct child_node_iterator* me, 
-                                           void* node);
-    int   (*child_node_iterator_has_next) (struct child_node_iterator* me);
-    void* (*child_node_iterator_next)     (struct child_node_iterator* me);
-} child_node_iterator;
+#include "unordered_set.h" //! REMOVE
 
 static list* trace_back_path(void* target_node, unordered_map* parents)
 {
@@ -28,7 +22,6 @@ static list* trace_back_path(void* target_node, unordered_map* parents)
 list* breadth_first_search(void* source_node, 
                            void* target_node,
                            child_node_iterator* child_iterator,
-                           void* state,
                            size_t (*hash_function)   (void*),
                            int    (*equals_function) (void*, void*))
 {
@@ -46,14 +39,12 @@ list* breadth_first_search(void* source_node,
     if (!source_node
         || !target_node
         || !child_iterator
-        || !state
         || !hash_function
         || !equals_function)
     {
         return NULL;
     }
 
-    child_iterator->state = state;
     queue_push_back(q, source_node);
     unordered_map_put(parent_map, source_node, NULL);
 

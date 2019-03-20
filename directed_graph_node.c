@@ -1,13 +1,12 @@
 #include "directed_graph_node.h"
 #include "my_assert.h"
 #include "unordered_set.h"
+#include "utils.h"
 #include <stdio.h>
-#include <stdbool.h>
 #include <string.h>
 
-#ifndef WIN32
-#define _CRT_SECURE_NO_WARNINGS
-#endif
+#define FALSE 0
+#define TRUE 1
 
 typedef struct directed_graph_node_state {
     char* p_name;
@@ -18,16 +17,17 @@ typedef struct directed_graph_node_state {
 static const int INITIAL_CAPACITY = 16;
 static const int MAXIMUM_NAME_STRING_LEN = 80;
 static const float LOAD_FACTOR = 1.0f;
-
-int equals_function(void* a, void* b)
+/*
+static int equals_function(void* a, void* b)
 {
-    if (!a || !b) return false;
+    if (!a || !b) return FALSE;
 
-    return strcmp(((directed_graph_node*)a)->state->p_name,
-        ((directed_graph_node*)b)->state->p_name) == 0;
-}
+    return strcmp(((directed_graph_node*) a)->state->p_name,
+                  ((directed_graph_node*) b)->state->p_name) == 0;
+}*/
 
 /* TODO: Come up with a better hash function. */
+/*
 size_t hash_function(void* v)
 {
     size_t ret;
@@ -48,7 +48,7 @@ size_t hash_function(void* v)
     }
 
     return ret;
-}
+}*/
 
 static const size_t MAXIMUM_NAME_LENGTH = 80;
 
@@ -89,8 +89,8 @@ directed_graph_node* directed_graph_node_alloc(char* name)
     mycpy(p_node->state->p_name, name);
     p_node->state->p_child_node_set = unordered_set_alloc(INITIAL_CAPACITY,
         LOAD_FACTOR,
-        hash_function,
-        equals_function);
+        directed_graph_node_hash_function,
+        directed_graph_node_equals_function);
 
     if (!p_node->state->p_child_node_set)
     {
@@ -103,8 +103,8 @@ directed_graph_node* directed_graph_node_alloc(char* name)
     p_node->state->p_parent_node_set =
         unordered_set_alloc(INITIAL_CAPACITY,
             LOAD_FACTOR,
-            hash_function,
-            equals_function);
+            directed_graph_node_hash_function,
+            directed_graph_node_equals_function);
 
     if (!p_node->state->p_parent_node_set)
     {
@@ -121,43 +121,45 @@ directed_graph_node* directed_graph_node_alloc(char* name)
 int directed_graph_node_add_arc(directed_graph_node* p_tail,
     directed_graph_node* p_head)
 {
-    if (!p_tail || !p_head) return false;
+    if (!p_tail || !p_head) return FALSE;
 
     if (!unordered_set_add(p_tail->state->p_child_node_set, p_head))
     {
-        return false;
+        return FALSE;
     }
 
     if (!unordered_set_add(p_head->state->p_parent_node_set, p_tail))
     {
         unordered_set_remove(p_tail->state->p_child_node_set, p_head);
-        return false;
+        return FALSE;
     }
 
-    return true;
+    return TRUE;
 }
 
 int directed_graph_node_has_arc(directed_graph_node* p_node,
     directed_graph_node* p_child_candidate)
 {
-    if (!p_node || !p_child_candidate) return false;
+    if (!p_node || !p_child_candidate) return FALSE;
 
     return unordered_set_contains(p_node->state->p_child_node_set,
-        p_child_candidate);
+                                  p_child_candidate);
 }
 
 int directed_graph_node_remove_arc(directed_graph_node* p_tail,
     directed_graph_node* p_head)
 {
-    if (!p_tail || !p_head) return false;
+    if (!p_tail || !p_head) return FALSE;
 
     unordered_set_remove(p_tail->state->p_child_node_set, p_head);
     unordered_set_remove(p_head->state->p_parent_node_set, p_tail);
-    return true;
+    return TRUE;
 }
 
 char* directed_graph_node_to_string(directed_graph_node* p_node)
 {
+    return p_node->state->p_name;
+    /*
     char* text;
 
     if (!p_node) return "NULL node";
@@ -169,7 +171,7 @@ char* directed_graph_node_to_string(directed_graph_node* p_node)
         "[directed_graph_node: id = %s]",
         p_node->state->p_name);
 
-    return text;
+    return text;*/
 }
 
 unordered_set*
@@ -250,12 +252,12 @@ static void directed_graph_node_test_add_arc()
 
     ASSERT(directed_graph_node_has_arc(node_a, node_b));
     ASSERT(directed_graph_node_has_arc(node_b, node_c));
-    ASSERT(directed_graph_node_has_arc(node_c, node_a) == false);
+    ASSERT(directed_graph_node_has_arc(node_c, node_a) == FALSE);
 
     ASSERT(directed_graph_node_add_arc(node_c, node_c));
     ASSERT(directed_graph_node_has_arc(node_c, node_c));
     ASSERT(directed_graph_node_remove_arc(node_c, node_c));
-    ASSERT(directed_graph_node_has_arc(node_c, node_c) == false);
+    ASSERT(directed_graph_node_has_arc(node_c, node_c) == FALSE);
 }
 
 static void directed_graph_node_test_remove_arc()
@@ -271,8 +273,8 @@ static void directed_graph_node_test_remove_arc()
     ASSERT(directed_graph_node_add_arc(node_a, node_b));
     ASSERT(directed_graph_node_has_arc(node_a, node_b));
     ASSERT(directed_graph_node_remove_arc(node_a, node_b));
-    ASSERT(directed_graph_node_has_arc(node_a, node_b) == false);
-    ASSERT(directed_graph_node_remove_arc(node_a, node_b) == false);
+    ASSERT(directed_graph_node_has_arc(node_a, node_b) == FALSE);
+    ASSERT(directed_graph_node_remove_arc(node_a, node_b) == FALSE);
 }
 
 static void directed_graph_node_test_clear()
@@ -298,7 +300,7 @@ static void directed_graph_node_test_clear()
 
     set = directed_graph_node_children_set(node_b);
     ASSERT(unordered_set_size(set) == 1);
-    ASSERT(unrodered_set_contains(set, node_c));
+    ASSERT(unordered_set_contains(set, node_c));
 
     set = directed_graph_node_children_set(node_c);
     ASSERT(unordered_set_size(set) == 0);
@@ -309,7 +311,7 @@ static void directed_graph_node_test_clear()
 
     set = directed_graph_node_parent_set(node_b);
     ASSERT(unordered_set_size(set) == 1);
-    ASSERT(unrodered_set_contains(set, node_a));
+    ASSERT(unordered_set_contains(set, node_a));
 
     set = directed_graph_node_parent_set(node_c);
     ASSERT(unordered_set_size(set) == 1);
@@ -322,4 +324,5 @@ void directed_graph_node_test()
 
     directed_graph_node_test_add_arc();
     directed_graph_node_test_remove_arc();
+    directed_graph_node_test_clear();
 }

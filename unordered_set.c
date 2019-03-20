@@ -187,6 +187,7 @@ int unordered_set_add(unordered_set* set, void* key)
         }
     }
 
+    //! Return a boolean signaling whether the array has grown.
     ensure_capacity(set);
 
     /* Recompute the index since it is possibly changed by 'ensure_capacity' */
@@ -550,6 +551,8 @@ static unordered_set_test_contains()
                                              int_equals);
     int i;
 
+    puts("        unordered_set_test_contains()");
+
     for (i = 0; i < 100; i++)
     {
         ASSERT(unordered_set_add(set, i));
@@ -576,6 +579,8 @@ static void unordered_set_test_remove()
         int_hash_function,
         int_equals);
 
+    puts("unordered_set_test_remove()");
+
     ASSERT(unordered_set_add(set, 1));
     ASSERT(unordered_set_add(set, 2));
     ASSERT(unordered_set_add(set, 3));
@@ -598,6 +603,8 @@ static void unordered_set_test_clear()
 
     int i;
 
+    puts("unordered_set_test_clear()");
+
     for (i = 0; i < 100; i++)
     {
         ASSERT(unordered_set_size(set) == i);
@@ -616,6 +623,35 @@ static void unordered_set_test_clear()
     unordered_set_free(set);
 }
 
+static void unordered_set_test_iterator()
+{
+    unordered_set* set = unordered_set_alloc(
+        5,
+        0.6f,
+        int_hash_function,
+        int_equals);
+
+    unordered_set_iterator* iterator;
+    int i = 0;
+
+    puts("        unordered_set_test_iterator()");
+
+    for (i = 0; i < 100; i++)
+    {
+        unordered_set_add(set, i);
+    }
+
+    iterator = unordered_set_iterator_alloc(set);
+
+    for (i = 0; i < 100; i++)
+    {
+        ASSERT(unordered_set_iterator_has_next(iterator));
+        ASSERT(unordered_set_contains(set, i));
+    }
+
+    ASSERT(unordered_set_iterator_has_next(set) == false);
+}
+
 void unordered_set_test()
 {
     puts("    unordered_set_test()");
@@ -624,4 +660,5 @@ void unordered_set_test()
     unordered_set_test_contains();
     unordered_set_test_remove();
     unordered_set_test_clear();
+    unordered_set_test_iterator();
 }

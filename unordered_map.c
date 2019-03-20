@@ -15,8 +15,8 @@ typedef struct unordered_map_state {
     unordered_map_entry** table;
     unordered_map_entry*  head;
     unordered_map_entry*  tail;
-    size_t(*hash_function)(void*);
-    bool(*equals_function)(void*, void*);
+    size_t (*hash_function)(void*);
+    int (*equals_function)(void*, void*);
     size_t                mod_count;
     size_t                table_capacity;
     size_t                size;
