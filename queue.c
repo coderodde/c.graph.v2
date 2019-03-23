@@ -96,6 +96,16 @@ void* queue_pop_front(queue* q)
     return element;
 }
 
+void* queue_front(queue* q)
+{
+    if (!q || !q->state || q->state->size == 0)
+    {
+        return NULL;
+    }
+
+    return q->state->front->element;
+}
+
 size_t queue_size(queue* q)
 {
     return q->state->size;

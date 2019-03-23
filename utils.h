@@ -10,6 +10,84 @@
 extern "C" {
 #endif
 
+
+    /*******************************************************************************
+    * Defines the API before client graph and this BFS implementation.             *
+    *******************************************************************************/
+    typedef struct child_node_iterator {
+
+        /********************************************
+        * Holds the actual iterator implementation. *
+        ********************************************/
+        void* state;
+
+        /**********************************************************************
+        * Performs whatever initialization are needed on behalf of the state. *
+        **********************************************************************/
+        void(*child_node_iterator_init)(struct child_node_iterator* me,
+            void* node);
+
+        /**************************************************************
+        * Signals whether there are more child nodes to iterate over. *
+        **************************************************************/
+        int(*child_node_iterator_has_next)(struct child_node_iterator* me);
+
+        /******************************
+        * Return the next child node. *
+        ******************************/
+        void* (*child_node_iterator_next)(struct child_node_iterator* me);
+
+        /********************************************
+        * Frees the resources held by the iterator. *
+        ********************************************/
+        void (*child_node_iterator_free)(struct child_node_iterator* me);
+    }
+    child_node_iterator;
+
+
+
+    /*******************************************************************************
+    * Defines the API before client graph and this BFS implementation.             *
+    *******************************************************************************/
+    typedef struct parent_node_iterator {
+
+        /********************************************
+        * Holds the actual iterator implementation. *
+        ********************************************/
+        void* state;
+
+        /**********************************************************************
+        * Performs whatever initialization are needed on behalf of the state. *
+        **********************************************************************/
+        void (*parent_node_iterator_init)(struct parent_node_iterator* me,
+                                          void* node);
+
+        /**************************************************************
+        * Signals whether there are more child nodes to iterate over. *
+        **************************************************************/
+        int (*parent_node_iterator_has_next)(struct parent_node_iterator* me);
+
+        /******************************
+        * Return the next child node. *
+        ******************************/
+        void* (*parent_node_iterator_next)(struct parent_node_iterator* me);
+
+        /********************************************
+        * Frees the resources held by the iterator. *
+        ********************************************/
+        void (*parent_node_iterator_free)(struct parent_node_iterator* me);
+    }
+    parent_node_iterator;
+
+    /*************************************************************************
+    * Constructs a shortest path from the data structures of a bidirectional *
+    * path finders.                                                          *
+    *************************************************************************/
+    list*
+        trace_back_path_bidirectional(void* touch_node,
+                                      unordered_map* parents_forward,
+                                      unordered_map* parents_backward);
+
     typedef struct point_3d {
         double x;
         double y;
@@ -50,7 +128,8 @@ extern "C" {
     size_t directed_graph_node_hash_function(void*);
 
     int is_valid_path(list* p_path);
-    
+    double get_time();
+
     /*
     double compute_path_cost(
         list* p_path, directed_graph_weight_function* p_weight_function);*/

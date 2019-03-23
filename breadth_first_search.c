@@ -25,7 +25,7 @@ list* breadth_first_search(void* source_node,
                            size_t (*hash_function)   (void*),
                            int    (*equals_function) (void*, void*))
 {
-    queue* q = queue_alloc();
+    queue* q = queue_alloc();// TODO!
     unordered_map* parent_map = 
         unordered_map_alloc(10,
                             1.0f, 
@@ -70,6 +70,8 @@ list* breadth_first_search(void* source_node,
                 queue_push_back(q, child_node);
             }
         }
+
+        child_iterator->child_node_iterator_free(child_iterator);
     }
 
     return NULL;

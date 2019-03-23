@@ -4,6 +4,7 @@
 #include "list.h"
 #include <math.h>
 #include <stdio.h>
+#include <time.h>
 
 #define FALSE 0
 #define TRUE 1
@@ -66,6 +67,31 @@ size_t directed_graph_node_hash_function(void* v)
     }
 
     return ret;
+}
+
+list*
+trace_back_path_bidirectional(void* touch_node,
+    unordered_map* parents_forward,
+    unordered_map* parents_backward)
+{
+    list* path = list_alloc(10);
+    void* u = touch_node;
+
+    while (u)
+    {
+        list_push_front(path, u);
+        u = unordered_map_get(parents_forward, u);
+    }
+
+    u = unordered_map_get(parents_backward, touch_node);
+
+    while (u)
+    {
+        list_push_back(path, u);
+        u = unordered_map_get(parents_backward, u);
+    }
+
+    return path;
 }
 
 unweighted_graph_data* create_unweighted_random_graph(
@@ -203,6 +229,12 @@ int is_valid_path(list* p_path)
 
     return true;
 }
+
+double get_time()
+{
+    return (1000.0 * clock()) / CLOCKS_PER_SEC;
+}
+
 //
 //double compute_path_cost(list* p_path,
 //    directed_graph_weight_function* p_weight_function)

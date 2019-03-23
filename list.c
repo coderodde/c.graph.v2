@@ -370,6 +370,41 @@ int list_contains(list* my_list,
     return FALSE;
 }
 
+int list_equals(list* lst_1, list* lst_2, int (*equals)(void*, void*))
+{
+    size_t i;
+
+    if (lst_1 == lst_2)
+    {
+        return TRUE;
+    }
+
+    if (!lst_1)
+    {
+        return FALSE;
+    }
+
+    if (!lst_2)
+    {
+        return FALSE;
+    }
+
+    if (list_size(lst_1) != list_size(lst_2))
+    {
+        return FALSE;
+    }
+
+    for (i = 0; i != list_size(lst_1); i++)
+    {
+        if (!equals(list_get(lst_1, i), list_get(lst_2, i)))
+        {
+            return FALSE;
+        }
+    }
+
+    return TRUE;
+}
+
 void list_clear(list* my_list)
 {
     if (!my_list)
@@ -554,6 +589,54 @@ static void list_test_clear()
     list_free(lst);
 }
 
+static int list_element_equals_1(void* a, void* b)
+{
+    return a == b;
+}
+
+static int list_element_equals_2(void* a, void* b)
+{
+
+    size_t sz_1 = *((size_t*) a);
+    size_t sz_2 = *((size_t*) b);
+    return sz_1 == sz_2;
+}
+
+static void list_test_equals()
+{
+    list* lst_1 = list_alloc(3);
+    list* lst_2 = list_alloc(3);
+    size_t i;
+    size_t* a;
+    size_t* b;
+
+    puts("        list_test_equals()");
+
+    for (i = 0; i < 10; i++)
+    {
+        list_push_back(lst_1, i);
+        list_push_back(lst_2, i);
+        ASSERT(list_equals(lst_1, lst_2, list_element_equals_1));
+    }
+
+    list_clear(lst_1);
+    list_clear(lst_2);
+
+    a = malloc(sizeof(*a));
+    b = malloc(sizeof(*b));
+
+    *a = 10;
+    *b = 10;
+
+    list_push_back(lst_1, a);
+    list_push_back(lst_1, a);
+    list_push_back(lst_2, a);
+    list_push_back(lst_2, b);
+
+    ASSERT(list_equals(lst_1, lst_2, list_element_equals_1) == FALSE);
+    ASSERT(list_equals(lst_1, lst_2, list_element_equals_2));
+}
+
 void list_test()
 {
     puts("    list_test()");
@@ -563,4 +646,5 @@ void list_test()
     list_test_remove_at();
     list_test_contains();
     list_test_clear();
+    list_test_equals();
 }

@@ -159,19 +159,6 @@ int directed_graph_node_remove_arc(directed_graph_node* p_tail,
 char* directed_graph_node_to_string(directed_graph_node* p_node)
 {
     return p_node->state->p_name;
-    /*
-    char* text;
-
-    if (!p_node) return "NULL node";
-
-    text = calloc(MAXIMUM_NAME_STRING_LEN, 1);
-
-    sprintf_s(text,
-        MAXIMUM_NAME_STRING_LEN,
-        "[directed_graph_node: id = %s]",
-        p_node->state->p_name);
-
-    return text;*/
 }
 
 unordered_set*

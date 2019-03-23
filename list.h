@@ -75,9 +75,16 @@ extern "C" {
     * Returns true if the list contains the specified element using the        *
     * equality function. Returns false otherwise.                              *
     ***************************************************************************/
-    int list_contains(list my_list, 
+    int list_contains(list* my_list, 
                       void* element,
                       int (*equals_function)(void*, void*));
+
+    /**************************************************************
+    * Returns true if the two input lists contain the same stuff. *
+    **************************************************************/
+    int list_equals(list* my_list_1, 
+                    list* my_list_2,
+                    int (*equals)(void*, void*));
 
     /***************************************************************************
     * Clears this list. The client programmer is responsible for memory-       *
