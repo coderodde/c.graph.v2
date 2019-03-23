@@ -66,7 +66,7 @@ static void directed_graph_parents_iterator_init(parent_node_iterator* pni,
     pni->state = unordered_set_iterator_alloc(p_node_parent_set);
 }
 
-static void directed_graph_parents_iterator_has_next(parent_node_iterator* pni)
+static int directed_graph_parents_iterator_has_next(parent_node_iterator* pni)
 {
     return unordered_set_iterator_has_next(pni->state);
 }
@@ -87,7 +87,7 @@ static void benchmark_unweighted_general_graph()
 {
     child_node_iterator children_iterator;
     parent_node_iterator parents_iterator;
-    int i;
+    size_t i;
 
     unweighted_graph_data* gd = create_unweighted_random_graph(
         NODES,
@@ -177,7 +177,6 @@ static void benchmark_unweighted_general_graph()
     }
 
     printf("Valid path: %s\n", is_valid_path(path2) ? "true" : "false");
-    return 0;
 }
 
 static void benchmark_all()

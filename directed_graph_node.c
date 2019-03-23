@@ -55,7 +55,7 @@ static const size_t MAXIMUM_NAME_LENGTH = 80;
 void mycpy(char* dest, const char* src)
 {
     size_t len = strlen(src);
-    int i;
+    size_t i;
 
     dest[len] = 0;
 

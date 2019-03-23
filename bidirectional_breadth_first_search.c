@@ -9,55 +9,12 @@
 
 typedef child_node_iterator neighbor_node_iterator;
 
-/*******************************************************
-* expand is also used for expanding backwards, and so, *
-* children_iterator points to a parent iterator.       *
-*******************************************************/
-static void expand(queue* q,
-                   unordered_map* distance_map,
-                   unordered_map* distance_map_opposite,
-                   unordered_map* parents_map,
-                   neighbor_node_iterator* neighbor_iterator,
-                   size_t* best_cost,
-                   size_t current_cost,
-                   void** touch_node)
-{
-    void* current_node = queue_pop_front(q);
-    void* neighbor_node;
-
-    if (unordered_map_contains_key(distance_map_opposite, current_node)
-        &&
-        *best_cost > current_cost)
-    {
-        *best_cost = current_cost;
-        *touch_node = current_node;
-    }
-
-    while (neighbor_iterator->NEIGHBOR_NODE_ITERATOR_HAS_NEXT(neighbor_iterator))
-    {
-        neighbor_node = 
-            neighbor_iterator->
-            NEIGHBOR_NODE_ITERATOR_NEXT(neighbor_iterator);
-
-        if (unordered_map_contains_key(parents_map, neighbor_node))
-        {
-            unordered_map_put(
-                distance_map,
-                neighbor_node,
-                (size_t) (unordered_map_get(distance_map, current_node)) + 1);
-
-            unordered_map_put(parents_map, neighbor_node, current_node);
-            queue_push_back(q, neighbor_node);
-        }
-    }
-}
-
 list* bidirectional_breadth_first_search(void* source_node,
                                          void* target_node,
                                          child_node_iterator* child_iterator,
                                          parent_node_iterator* parent_iterator,
-                                         size_t(*hash_function)(void*),
-                                         int(*equals_function)(void*, void*))
+                                         size_t (*hash_function)(void*),
+                                         int (*equals_function)(void*, void*))
 {
     queue* queue_a;
     queue* queue_b;
@@ -72,7 +29,6 @@ list* bidirectional_breadth_first_search(void* source_node,
     void* current_node;
     void* child_node;
     void* parent_node;
-    neighbor_node_iterator neighbor_iterator;
     
     if (!source_node
         || !target_node
@@ -119,8 +75,8 @@ list* bidirectional_breadth_first_search(void* source_node,
 
     while (queue_size(queue_a) > 0 && queue_size(queue_b) > 0)
     {
-        dist_a = unordered_map_get(distance_a, queue_front(queue_a));
-        dist_b = unordered_map_get(distance_a, queue_front(queue_b));
+        dist_a = (size_t) unordered_map_get(distance_a, queue_front(queue_a));
+        dist_b = (size_t) unordered_map_get(distance_a, queue_front(queue_b));
 
         if (touch_node && best_cost <= dist_a + dist_b)
         {
@@ -132,8 +88,8 @@ list* bidirectional_breadth_first_search(void* source_node,
         if (unordered_map_size(distance_a) < unordered_map_size(distance_b))
         {*/
             current_node = queue_pop_front(queue_a);
-            dist_a = unordered_map_get(parents_a, current_node);
-            dist_b = unordered_map_get(parents_b, current_node);
+            dist_a = (size_t) unordered_map_get(parents_a, current_node);
+            dist_b = (size_t) unordered_map_get(parents_b, current_node);
 
             if (unordered_map_contains_key(parents_b, current_node)
                 &&
@@ -163,8 +119,8 @@ list* bidirectional_breadth_first_search(void* source_node,
         else
         {*/
             current_node = queue_pop_front(queue_b);
-            dist_a = unordered_map_get(distance_a, current_node);
-            dist_b = unordered_map_get(distance_b, current_node);
+            dist_a = (size_t) unordered_map_get(distance_a, current_node);
+            dist_b = (size_t) unordered_map_get(distance_b, current_node);
 
             if (unordered_map_contains_key(parents_a, current_node)
                 &&

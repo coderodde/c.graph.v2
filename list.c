@@ -510,7 +510,7 @@ static void list_test_insert()
 static void list_test_remove_at()
 {
     list* lst = list_alloc(3);
-    int i;
+    size_t i;
 
     puts("        list_test_remove_at()");
 
