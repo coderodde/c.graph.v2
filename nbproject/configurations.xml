@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="100">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+      <itemPath>bidirectional_breadth_first_search.h</itemPath>
+      <itemPath>breadth_first_search.h</itemPath>
+      <itemPath>directed_graph_node.h</itemPath>
+      <itemPath>directed_graph_weight_function.h</itemPath>
+      <itemPath>list.h</itemPath>
+      <itemPath>my_assert.h</itemPath>
+      <itemPath>queue.h</itemPath>
+      <itemPath>unordered_map.h</itemPath>
+      <itemPath>unordered_set.h</itemPath>
+      <itemPath>utils.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <itemPath>bidirectional_breadth_first_search.c</itemPath>
+      <itemPath>breadth_first_search.c</itemPath>
+      <itemPath>directed_graph_node.c</itemPath>
+      <itemPath>directed_graph_weight_function.c</itemPath>
+      <itemPath>list.c</itemPath>
+      <itemPath>main.c</itemPath>
+      <itemPath>my_assert.c</itemPath>
+      <itemPath>queue.c</itemPath>
+      <itemPath>unordered_map.c</itemPath>
+      <itemPath>unordered_set.c</itemPath>
+      <itemPath>utils.c</itemPath>
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceRootList>
+    <Elem>.</Elem>
+    <Elem>.</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="1">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <architecture>1</architecture>
+          <standard>2</standard>
+          <commandlineTool>gcc</commandlineTool>
+          <useLinkerLibraries>false</useLinkerLibraries>
+          <warningLevel>2</warningLevel>
+        </cTool>
+      </compileType>
+      <item path="bidirectional_breadth_first_search.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="bidirectional_breadth_first_search.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="breadth_first_search.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="breadth_first_search.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="directed_graph_node.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="directed_graph_node.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="directed_graph_weight_function.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="directed_graph_weight_function.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="list.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="list.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="main.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="my_assert.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="my_assert.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="queue.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="queue.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="unordered_map.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="unordered_map.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="unordered_set.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="unordered_set.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="utils.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="utils.h" ex="false" tool="3" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Release" type="1">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+          <standard>2</standard>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+      </compileType>
+      <item path="bidirectional_breadth_first_search.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="bidirectional_breadth_first_search.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="breadth_first_search.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="breadth_first_search.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="directed_graph_node.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="directed_graph_node.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="directed_graph_weight_function.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="directed_graph_weight_function.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="list.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="list.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="main.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="my_assert.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="my_assert.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="queue.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="queue.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="unordered_map.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="unordered_map.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="unordered_set.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="unordered_set.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="utils.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="utils.h" ex="false" tool="3" flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>

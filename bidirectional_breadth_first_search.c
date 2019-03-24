@@ -2,11 +2,7 @@
 #include "list.h"
 #include "queue.h"
 #include "utils.h"
-<<<<<<< HEAD
 #include <limits.h>
-=======
-
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
 
 #define NEIGHBOR_NODE_ITERATOR_HAS_NEXT child_node_iterator_has_next
 #define NEIGHBOR_NODE_ITERATOR_NEXT     child_node_iterator_next
@@ -88,7 +84,6 @@ list* bidirectional_breadth_first_search(void* source_node,
                                                  parents_a,
                                                  parents_b);
         }
-<<<<<<< HEAD
          
         current_node = queue_pop_front(queue_a);
         dist_a = (size_t) unordered_map_get(parents_a, current_node);
@@ -147,72 +142,6 @@ list* bidirectional_breadth_first_search(void* source_node,
         }
 
         parent_iterator->parent_node_iterator_free(parent_iterator);
-=======
-        /*
-        if (unordered_map_size(distance_a) < unordered_map_size(distance_b))
-        {*/
-            current_node = queue_pop_front(queue_a);
-            dist_a = (size_t) unordered_map_get(parents_a, current_node);
-            dist_b = (size_t) unordered_map_get(parents_b, current_node);
-
-            if (unordered_map_contains_key(parents_b, current_node)
-                &&
-                best_cost > dist_a + dist_b)
-            {
-                best_cost = dist_a + dist_b;
-                touch_node = current_node;
-            }
-
-            child_iterator->child_node_iterator_init(child_iterator, 
-                                                     current_node);
-
-            while (child_iterator->child_node_iterator_has_next(child_iterator))
-            {
-                child_node = child_iterator->
-                             child_node_iterator_next(child_iterator);
-
-                if (!unordered_map_contains_key(parents_a, child_node))
-                {
-                    unordered_map_put(parents_a, child_node, current_node);
-                    queue_push_back(queue_a, child_node);
-                }
-            }
-
-            child_iterator->child_node_iterator_free(child_iterator);
-        /*}
-        else
-        {*/
-            current_node = queue_pop_front(queue_b);
-            dist_a = (size_t) unordered_map_get(distance_a, current_node);
-            dist_b = (size_t) unordered_map_get(distance_b, current_node);
-
-            if (unordered_map_contains_key(parents_a, current_node)
-                &&
-                best_cost > dist_a + dist_b)
-            {
-                best_cost = dist_a + dist_b;
-                touch_node = current_node;
-            }
-
-            parent_iterator->parent_node_iterator_init(parent_iterator,
-                                                       current_node);
-
-            while (parent_iterator->
-                   parent_node_iterator_has_next(parent_iterator))
-            {
-                parent_node = parent_iterator->
-                              parent_node_iterator_next(parent_iterator);
-
-                if (!unordered_map_contains_key(parents_b, parent_node))
-                {
-                    unordered_map_put(parents_b, parent_node, current_node);
-                    queue_push_back(queue_b, parent_node);
-                }
-            }
-
-            parent_iterator->parent_node_iterator_free(parent_iterator);
-        //}
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
     }
 
     return NULL;

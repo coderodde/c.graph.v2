@@ -1,9 +1,6 @@
 #include "list.h"
 #include "my_assert.h"
-<<<<<<< HEAD
 #include <stdint.h>
-=======
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -15,13 +12,18 @@ typedef struct list_state {
     size_t mask;
 } list_state;
 
-static const int MINIMUM_CAPACITY = 16;
+static const size_t MINIMUM_CAPACITY = 16;
 
-static int fix_initial_capacity(int initial_capacity)
+static size_t sz_max(size_t a, size_t b)
 {
-    int ret = 1;
+    return a > b ? a : b;
+}
 
-    initial_capacity = max(initial_capacity, MINIMUM_CAPACITY);
+static int fix_initial_capacity(size_t initial_capacity)
+{
+    size_t ret = 1;
+
+    initial_capacity = sz_max(initial_capacity, MINIMUM_CAPACITY);
 
     while (ret < initial_capacity)
     {
@@ -434,13 +436,8 @@ void list_free(list* my_list)
 
 static int equals(void* a, void* b)
 {
-<<<<<<< HEAD
     int ia = (intptr_t) a;
     int ib = (intptr_t) b;
-=======
-    int ia = (int) a;
-    int ib = (int) b;
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
     return ia == ib;
 }
 
@@ -456,22 +453,14 @@ static void list_test_push_front_pop_front()
     for (i = 0; i < 100; i++)
     {
         ASSERT(i == list_size(lst));
-<<<<<<< HEAD
         ASSERT(list_push_front(lst, (void*)(intptr_t) i));
-=======
-        ASSERT(list_push_front(lst, i));
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
         ASSERT(i + 1 == list_size(lst));
     }
 
     for (i = 0; i < 100; i++)
     {
         ASSERT(100 - i == list_size(lst));
-<<<<<<< HEAD
         ASSERT(99 - i == (intptr_t) list_pop_front(lst));
-=======
-        ASSERT(99 - i == (int) list_pop_front(lst));
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
         ASSERT(99 - i == list_size(lst));
     }
 
@@ -489,21 +478,13 @@ static void list_test_push_back_pop_back()
     for (i = 0; i < 100; i++)
     {
         ASSERT(i == list_size(lst));
-<<<<<<< HEAD
         ASSERT(list_push_back(lst, (void*)(intptr_t) i));
-=======
-        ASSERT(list_push_back(lst, i));
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
         ASSERT(i + 1 == list_size(lst));
     }
 
     for (i = 0; i < 100; i++)
     {
-<<<<<<< HEAD
         ASSERT(99 - i == (intptr_t) list_pop_back(lst));
-=======
-        ASSERT(99 - i == list_pop_back(lst));
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
         ASSERT(99 - i == list_size(lst));
     }
 
@@ -517,7 +498,6 @@ static void list_test_insert()
 
     puts("        list_test_insert()");
 
-<<<<<<< HEAD
     ASSERT(list_insert(lst, 0, (void*)(intptr_t) 0));   /* < 0 > */
     ASSERT(list_insert(lst, 0, (void*)(intptr_t) -1));  /* < -1, 0 > */
     ASSERT(list_insert(lst, 2, (void*)(intptr_t) 3));   /* < -1, 0, 3 > */
@@ -529,7 +509,7 @@ static void list_test_insert()
     ASSERT(8  == (intptr_t) list_get(lst, 2));
     ASSERT(0  == (intptr_t) list_get(lst, 3));
     ASSERT(3  == (intptr_t) list_get(lst, 4));
-=======
+
     ASSERT(list_insert(lst, 0, 0));   /* < 0 > */
     ASSERT(list_insert(lst, 0, -1));  /* < -1, 0 > */
     ASSERT(list_insert(lst, 2, 3));   /* < -1, 0, 3 > */
@@ -541,7 +521,6 @@ static void list_test_insert()
     ASSERT(8 == list_get(lst, 2));
     ASSERT(0 == list_get(lst, 3));
     ASSERT(3 == list_get(lst, 4));
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
 
     list_free(lst);
 }
@@ -555,7 +534,6 @@ static void list_test_remove_at()
 
     for (i = 0; i < 50; i++)
     {
-<<<<<<< HEAD
         ASSERT(list_push_back(lst, (void*)(intptr_t) i));
     }
 
@@ -566,7 +544,6 @@ static void list_test_remove_at()
     for (i = 0; i < 10; i++)
     {
         ASSERT(i == (intptr_t) list_get(lst, i));
-=======
         ASSERT(list_push_back(lst, i));
     }
 
@@ -577,16 +554,11 @@ static void list_test_remove_at()
     for (i = 0; i < 10; i++)
     {
         ASSERT(i == (int) list_get(lst, i));
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
     }
 
     for (i = 10; i < list_size(lst); i++)
     {
-<<<<<<< HEAD
         ASSERT(i + 3 == (intptr_t) list_get(lst, i));
-=======
-        ASSERT(i + 3 == (int) list_get(lst, i));
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
     }
 
     list_free(lst);
@@ -598,7 +570,6 @@ static void list_test_contains()
     
     puts("        list_test_contains()");
 
-<<<<<<< HEAD
     list_push_back(lst, (void*) 1);
     list_push_back(lst, (void*) 2);
     list_push_back(lst, (void*) 3);
@@ -612,7 +583,7 @@ static void list_test_contains()
     list_remove_at(lst, 1);
 
     ASSERT(list_contains(lst, (void*) 2, equals) == 0); /* No 2 anymore. */
-=======
+
     list_push_back(lst, 1);
     list_push_back(lst, 2);
     list_push_back(lst, 3);
@@ -620,13 +591,12 @@ static void list_test_contains()
     ASSERT(list_contains(lst, 1, equals));
     ASSERT(list_contains(lst, 2, equals));
     ASSERT(list_contains(lst, 3, equals));
-    ASSERT(list_contains(lst, 4, equals) == 0); // No 4.
-    ASSERT(list_contains(lst, 0, equals) == 0); // No 5.
+    ASSERT(list_contains(lst, 4, equals) == 0); /* No 4. */
+    ASSERT(list_contains(lst, 0, equals) == 0); /* No 5. */
 
     list_remove_at(lst, 1);
 
-    ASSERT(list_contains(lst, 2, equals) == 0); // No 1 anymore.
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
+    ASSERT(list_contains(lst, 2, equals) == 0); /* No 1 anymore. */
 
     list_free(lst);
 }
@@ -640,22 +610,13 @@ static void list_test_clear()
 
     for (i = 0; i < 100; i++)
     {
-<<<<<<< HEAD
         list_push_back(lst, (void*)(intptr_t) i);
-=======
-        list_push_back(lst, i);
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
     }
 
     for (i = 0; i < 100; i++)
     {
-<<<<<<< HEAD
         ASSERT((intptr_t) list_get(lst, i) == i);
         ASSERT(list_contains(lst, (void*)(intptr_t) i, equals));
-=======
-        ASSERT(list_get(lst, i) == i);
-        ASSERT(list_contains(lst, i, equals));
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
     }
 
     ASSERT(100 == list_size(lst));
@@ -664,11 +625,7 @@ static void list_test_clear()
 
     for (i = 0; i < 100; i++)
     {
-<<<<<<< HEAD
         ASSERT(list_contains(lst, (void*)(intptr_t) i, equals) == FALSE);
-=======
-        ASSERT(list_contains(lst, i, equals) == FALSE);
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
     }
 
     list_free(lst);
@@ -699,13 +656,8 @@ static void list_test_equals()
 
     for (i = 0; i < 10; i++)
     {
-<<<<<<< HEAD
         list_push_back(lst_1, (void*) i);
         list_push_back(lst_2, (void*) i);
-=======
-        list_push_back(lst_1, i);
-        list_push_back(lst_2, i);
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
         ASSERT(list_equals(lst_1, lst_2, list_element_equals_1));
     }
 

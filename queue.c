@@ -1,14 +1,9 @@
 #include "my_assert.h"
 #include "queue.h"
 #include <stddef.h>
-<<<<<<< HEAD
 #include <stdint.h>
 
 typedef struct queue_node {
-=======
-
-typedef struct {
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
     struct queue_node* next;
     void* element;
 } queue_node;
@@ -149,7 +144,6 @@ void queue_test()
     ASSERT(q != NULL);
 
     for (i = 0; i < 10; i++) {
-<<<<<<< HEAD
         queue_push_back(q, (void*)(intptr_t) i);
     }
 
@@ -166,9 +160,6 @@ void queue_test()
     ASSERT(num == 10);
     ASSERT(queue_size(q) == 1);
     num = (intptr_t) queue_pop_front(q);
-=======
-        queue_push_back(q, (void*) i);
-    }
 
     for (i = 0; i < 10; i++) {
         ASSERT(i == (int) queue_pop_front(q));
@@ -183,7 +174,6 @@ void queue_test()
     ASSERT(num == 10);
     ASSERT(queue_size(q) == 1);
     num = (int) queue_pop_front(q);
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
     ASSERT(num == 11);
     ASSERT(queue_size(q) == 0);
 }

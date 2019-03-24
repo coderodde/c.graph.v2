@@ -103,16 +103,14 @@ unweighted_graph_data* create_unweighted_random_graph(
     size_t (*hash_function)(void*),
     int (*equals_function)(void*, void*))
 {
-    size_t i;
-    char* p_name;
-
-    directed_graph_node*            p_tail;
-    directed_graph_node*            p_head;
-    //directed_graph_weight_function* p_weight_function;
-    unordered_map*                  p_point_map;
-    point_3d*                       p_a;
-    point_3d*                       p_b;
-    unweighted_graph_data*                     p_ret;
+    size_t                 i;
+    char*                  p_name;
+    directed_graph_node*   p_tail;
+    directed_graph_node*   p_head;
+    unordered_map*         p_point_map;
+    point_3d*              p_a;
+    point_3d*              p_b;
+    unweighted_graph_data* p_ret;
 
     p_ret = malloc(sizeof(*p_ret));
 
@@ -141,7 +139,6 @@ unweighted_graph_data* create_unweighted_random_graph(
         hash_function,
         equals_function)))
     {
-        //directed_graph_weight_function_free(p_weight_function);
         free(p_ret);
         free(p_node_array);
         return NULL;
@@ -150,9 +147,8 @@ unweighted_graph_data* create_unweighted_random_graph(
     for (i = 0; i < nodes; ++i)
     {
         p_name = calloc(30, sizeof(char));
-        sprintf_s(p_name, 30, "%d", i); //! Check if sprintf_s is ANSI C, and if so leave it like that.
+        sprintf(p_name, "%d", i);
         p_node_array[i] = directed_graph_node_alloc(p_name);
-        //        printf("%s\n", directed_graph_node_t_to_string(p_node_array[i]));
         unordered_map_put(p_point_map,
             p_node_array[i],
             random_point(maxx, maxy, maxz));
@@ -178,7 +174,6 @@ unweighted_graph_data* create_unweighted_random_graph(
     }
 
     p_ret->p_node_array = p_node_array;
-    //p_ret->p_weight_function = p_weight_function;
     p_ret->p_point_map = p_point_map;
 
     return p_ret;
@@ -235,25 +230,24 @@ double get_time()
     return (1000.0 * clock()) / CLOCKS_PER_SEC;
 }
 
-//
-//double compute_path_cost(list* p_path,
-//    directed_graph_weight_function* p_weight_function)
-//{
-//    size_t i;
-//    size_t sz;
-//    double cost = 0.0;
-//
-//    if (!p_path) return 0.0;
-//
-//    /* A empty path is defined to be valid. */
-//    if ((sz = list_size(p_path)) == 0) return 0.0;
-//
-//    for (i = 0; i < sz - 1; ++i)
-//    {
-//        cost += *directed_graph_weight_function_get(p_weight_function,
-//            list_get(p_path, i),
-//            list_get(p_path, i + 1));
-//    }
-//
-//    return cost;
-//}
+/*
+double compute_path_cost(list* p_path,
+    directed_graph_weight_function* p_weight_function)
+{
+    size_t i;
+    size_t sz;
+    double cost = 0.0;
+
+    if (!p_path) return 0.0;
+
+    if ((sz = list_size(p_path)) == 0) return 0.0;
+
+    for (i = 0; i < sz - 1; ++i)
+    {
+        cost += *directed_graph_weight_function_get(p_weight_function,
+            list_get(p_path, i),
+            list_get(p_path, i + 1));
+    }
+
+    return cost;
+} */

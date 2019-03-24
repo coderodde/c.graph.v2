@@ -36,11 +36,7 @@ static void print_test_results()
     else
     {
         printf(
-<<<<<<< HEAD
             "Assertions: %zu, errors: %zu, pass percentage: %f.\n",
-=======
-            "Assertions: %d, errors: %d, pass percentage: %f.\n",
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
             total_assertions,
             total_assertion_errors,
             100.0f - (100.0f * total_assertion_errors) / total_assertions);

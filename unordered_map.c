@@ -1,10 +1,7 @@
 #include "my_assert.h"
 #include "unordered_map.h"
 #include <stdbool.h>
-<<<<<<< HEAD
 #include <stdint.h>
-=======
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
 #include <stdlib.h>
 
 typedef struct unordered_map_entry {
@@ -512,13 +509,8 @@ void unordered_map_iterator_free(unordered_map_iterator* iterator)
 
 static int int_equals(void* a, void* b)
 {
-<<<<<<< HEAD
     int ia = (intptr_t) a;
     int ib = (intptr_t) b;
-=======
-    int ia = (int) a;
-    int ib = (int) b;
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
     return ia == ib;
 }
 
@@ -540,11 +532,7 @@ static void unordered_map_test_put()
     {
         ASSERT(unordered_map_is_healthy(map));
         ASSERT(unordered_map_size(map) == i);
-<<<<<<< HEAD
         unordered_map_put(map, (void*)(intptr_t) i, (void*)(intptr_t)(2 * i));
-=======
-        unordered_map_put(map, (void*) i, (void*)(2 * i));
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
         ASSERT(unordered_map_size(map) == i + 1);
     }
 
@@ -553,11 +541,7 @@ static void unordered_map_test_put()
     for (i = 0; i < 30; i++)
     {
         ASSERT(unordered_map_is_healthy(map));
-<<<<<<< HEAD
         ASSERT((intptr_t) unordered_map_get(map, (void*)(intptr_t) i) == 2 * i);
-=======
-        ASSERT((int) unordered_map_get(map, (void*) i) == 2 * i);
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
     }
 
     ASSERT(unordered_map_is_healthy(map));
@@ -576,22 +560,14 @@ static void unordered_map_test_get()
     for (i = 0; i < 30; i++)
     {
         ASSERT(unordered_map_is_healthy(map));
-<<<<<<< HEAD
         unordered_map_put(map, (void*)(intptr_t) i, (void*)(intptr_t)(2 * i));
-=======
-        unordered_map_put(map, (void*) i, (void*)(2 * i));
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
     }
 
     ASSERT(unordered_map_is_healthy(map));
 
     for (i = 0; i < 30; i++)
     {
-<<<<<<< HEAD
         ASSERT((intptr_t) unordered_map_get(map, (void*)(intptr_t) i) == i * 2);
-=======
-        ASSERT((int) unordered_map_get(map, (void*) i) == i * 2);
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
         ASSERT(unordered_map_is_healthy(map));
     }
 
@@ -639,25 +615,14 @@ static void unordered_map_test_remove()
 
     for (i = 0; i < 100; i++)
     {
-<<<<<<< HEAD
         unordered_map_put(map, (void*)(intptr_t) i, (void*)(intptr_t)(3 * i));
-=======
-        unordered_map_put(map, i, 3 * i);
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
     }
 
     unordered_map_is_healthy(map);
     ASSERT(unordered_map_size(map) == 100);
-
-<<<<<<< HEAD
     ASSERT(unordered_map_remove(map, (void*)(intptr_t) 8)  == (void*)(  8 * 3));
     ASSERT(unordered_map_remove(map, (void*)(intptr_t) 26) == (void*)( 26 * 3));
     ASSERT(unordered_map_remove(map, (void*)(intptr_t) 29) == (void*)( 29 * 3));
-=======
-    ASSERT((int) unordered_map_remove(map, 8));
-    ASSERT((int) unordered_map_remove(map, 26));
-    ASSERT((int) unordered_map_remove(map, 29));
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
     ASSERT(unordered_map_size(map) == 97);
     ASSERT(unordered_map_is_healthy(map));
 
@@ -673,24 +638,16 @@ static void unordered_map_test_clear()
 
     for (i = 0; i < 100; i++) {
         ASSERT(unordered_map_size(map) == i);
-<<<<<<< HEAD
         ASSERT(unordered_map_put(map,
                                  (void*)(intptr_t) i, 
                                  (void*)(intptr_t) i) == NULL);
         
-=======
-        ASSERT(unordered_map_put(map, i, i) == NULL);
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
         ASSERT(unordered_map_is_healthy(map));
     }
 
     for (i = 0; i < 100; i++)
     {
-<<<<<<< HEAD
         ASSERT(unordered_map_contains_key(map, (void*)(intptr_t) i));
-=======
-        ASSERT(unordered_map_contains_key(map, (void*) i));
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
     }
 
     unordered_map_clear(map);
@@ -709,11 +666,7 @@ static void unordered_map_test_iterator()
 
     for (i = 0; i < 10; i++)
     {
-<<<<<<< HEAD
         unordered_map_put(map, (void*)(intptr_t) i, (void*)(intptr_t)(i + 100));
-=======
-        unordered_map_put(map, i, i + 100);
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
     }
 
     unordered_map_iterator* iter = unordered_map_iterator_alloc(map);
@@ -735,11 +688,7 @@ static void unordered_map_test_iterator()
 
     ASSERT(unordered_map_is_healthy(map));
     ASSERT(!unordered_map_iterator_is_disturbed(iter));
-<<<<<<< HEAD
     ASSERT(101 == (intptr_t) unordered_map_remove(map, (void*) 1));
-=======
-    ASSERT(101 == (int) unordered_map_remove(map, 1));
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
     ASSERT(unordered_map_iterator_is_disturbed(iter));
     ASSERT(unordered_map_is_healthy(map));
 

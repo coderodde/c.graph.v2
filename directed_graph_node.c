@@ -87,18 +87,11 @@ directed_graph_node* directed_graph_node_alloc(char* name)
     p_node->state->p_name = calloc(input_name_length,
         sizeof(char));
     mycpy(p_node->state->p_name, name);
-<<<<<<< HEAD
     p_node->state->p_child_node_set = 
             unordered_set_alloc(INITIAL_CAPACITY,
                                 LOAD_FACTOR,
                                 directed_graph_node_hash_function,
                                 directed_graph_node_equals_function);
-=======
-    p_node->state->p_child_node_set = unordered_set_alloc(INITIAL_CAPACITY,
-        LOAD_FACTOR,
-        directed_graph_node_hash_function,
-        directed_graph_node_equals_function);
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
 
     if (!p_node->state->p_child_node_set)
     {
@@ -192,11 +185,7 @@ void directed_graph_node_clear(directed_graph_node* p_node)
 
     while (unordered_set_iterator_has_next(p_iterator))
     {
-<<<<<<< HEAD
         unordered_set_iterator_next(p_iterator, (void*) &p_tmp_node);
-=======
-        unordered_set_iterator_next(p_iterator, &p_tmp_node);
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
 
         if (strcmp(p_node->state->p_name, p_tmp_node->state->p_name) != 0)
         {
@@ -208,11 +197,7 @@ void directed_graph_node_clear(directed_graph_node* p_node)
 
     while (unordered_set_iterator_has_next(p_iterator))
     {
-<<<<<<< HEAD
         unordered_set_iterator_next(p_iterator, (void**) &p_tmp_node);
-=======
-        unordered_set_iterator_next(p_iterator, &p_tmp_node);
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
 
         if (strcmp(p_node->state->p_name, p_tmp_node->state->p_name) != 0)
         {

@@ -1,6 +1,5 @@
 #include "my_assert.h"
 #include "unordered_set.h"
-<<<<<<< HEAD
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,11 +7,6 @@
 #define FALSE 0
 #define TRUE 1
 
-=======
-#include <stdlib.h>
-#include <string.h>
-
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
 typedef struct unordered_set_entry {
     void*                       key;
     struct unordered_set_entry* chain_next;
@@ -21,7 +15,6 @@ typedef struct unordered_set_entry {
 } unordered_set_entry;
 
 typedef struct unordered_set_state {
-<<<<<<< HEAD
     unordered_set_entry**  table;
     unordered_set_entry*   head;
     unordered_set_entry*   tail;
@@ -33,19 +26,6 @@ typedef struct unordered_set_state {
     size_t                 mask;
     size_t                 max_allowed_size;
     float                  load_factor;
-=======
-    unordered_set_entry** table;
-    unordered_set_entry*  head;
-    unordered_set_entry*  tail;
-    size_t(*hash_function)(void*);
-    bool(*equals_function)(void*, void*);
-    size_t                mod_count;
-    size_t                table_capacity;
-    size_t                size;
-    size_t                mask;
-    size_t                max_allowed_size;
-    float                 load_factor;
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
 } unordered_set_state;
 
 typedef struct unordered_set_iterator {
@@ -115,11 +95,7 @@ static size_t fix_initial_capacity(size_t initial_capacity)
 unordered_set* unordered_set_alloc(size_t initial_capacity,
     float load_factor,
     size_t(*hash_function)(void*),
-<<<<<<< HEAD
     int (*equals_function)(void*, void*))
-=======
-    bool(*equals_function)(void*, void*))
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
 {
     unordered_set* set;
 
@@ -201,11 +177,7 @@ int unordered_set_add(unordered_set* set, void* key)
 
     if (!set)
     {
-<<<<<<< HEAD
         return FALSE;
-=======
-        return NULL;
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
     }
 
     hash_value = set->state->hash_function(key);
@@ -219,10 +191,6 @@ int unordered_set_add(unordered_set* set, void* key)
         }
     }
 
-<<<<<<< HEAD
-=======
-    //! Return a boolean signaling whether the array has grown.
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
     ensure_capacity(set);
 
     /* Recompute the index since it is possibly changed by 'ensure_capacity' */
@@ -495,13 +463,8 @@ void unordered_set_iterator_free(unordered_set_iterator* iterator)
 
 static int int_equals(void* a, void* b)
 {
-<<<<<<< HEAD
     int ia = (int)(intptr_t) a;
     int ib = (int)(intptr_t) b;
-=======
-    int ia = (int) a;
-    int ib = (int) b;
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
     return ia == ib;
 }
 
@@ -548,11 +511,7 @@ static unordered_set_test_add()
 
     for (i = 10; i < 20; i++)
     {
-<<<<<<< HEAD
         ASSERT(unordered_set_contains(set, i) == 0); /*!*/
-=======
-        ASSERT(!unordered_set_contains(set, i));
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
         unordered_set_add(set, i);
         ASSERT(unordered_set_contains(set, i));
         ASSERT(unordered_set_is_healthy(set));
@@ -607,7 +566,7 @@ static unordered_set_test_contains()
         ASSERT(unordered_set_contains(set, i));
     }
 
-    for (int i = 50; i < 100; i++)
+    for (i = 50; i < 100; i++)
     {
         ASSERT(unordered_set_remove(set, i));
         ASSERT(!unordered_set_contains(set, i));

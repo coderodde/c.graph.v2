@@ -23,12 +23,8 @@ extern "C" {
     unordered_map* unordered_map_alloc
     (size_t   initial_capacity,
         float    load_factor,
-        size_t(*hash_function)(void*),
-<<<<<<< HEAD
+        size_t (*hash_function)(void*),
         int (*equals_function)(void*, void*));
-=======
-        bool(*equals_function)(void*, void*));
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
 
     /***************************************************************************
     * If p_map does not contain the key p_key, inserts it in the map,          *

@@ -89,7 +89,6 @@ static void benchmark_unweighted_general_graph()
     parent_node_iterator parents_iterator;
     size_t i;
 
-<<<<<<< HEAD
     unweighted_graph_data* gd =
             create_unweighted_random_graph(
                 NODES,
@@ -99,16 +98,6 @@ static void benchmark_unweighted_general_graph()
                 MAXZ,
                 directed_graph_node_hash_function,
                 directed_graph_node_equals_function);
-=======
-    unweighted_graph_data* gd = create_unweighted_random_graph(
-        NODES,
-        ARCS,
-        MAXX,
-        MAXY,
-        MAXZ,
-        directed_graph_node_hash_function,
-        directed_graph_node_equals_function);
->>>>>>> 762273c60dc5d5029d89da43112e43c70a82b704
 
     /* Fill the child node generator interface: */
     children_iterator.child_node_iterator_init = 
