@@ -108,8 +108,9 @@ unweighted_graph_data* create_unweighted_random_graph(
     directed_graph_node*   p_tail;
     directed_graph_node*   p_head;
     unordered_map*         p_point_map;
-    point_3d*              p_a;
-    point_3d*              p_b;
+   
+    point_3d*              p_a = NULL;
+    point_3d*              p_b = NULL;
     unweighted_graph_data* p_ret;
 
     p_ret = malloc(sizeof(*p_ret));
@@ -161,7 +162,8 @@ unweighted_graph_data* create_unweighted_random_graph(
 
         p_a = unordered_map_get(p_point_map, p_tail);
         p_b = unordered_map_get(p_point_map, p_head);
-
+        ((intptr_t) p_a)++;
+        ((intptr_t) p_b)++;
         directed_graph_node_add_arc(p_tail, p_head);
 
         /*directed_graph_weight_function_put(

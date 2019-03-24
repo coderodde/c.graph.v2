@@ -88,7 +88,10 @@ extern "C" {
     * Deallocates the set iterator.                                            *
     ***************************************************************************/
     void unordered_set_iterator_free(unordered_set_iterator* p_iterator);
-
+    
+    /* Contains the unit tests. */
+    void unordered_set_test();
+    
 #ifdef	__cplusplus
 }
 #endif

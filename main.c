@@ -1,6 +1,7 @@
 #include "breadth_first_search.h"
 #include "bidirectional_breadth_first_search.h"
 #include "directed_graph_node.h"
+#include "list.h"
 #include "my_assert.h"
 #include "queue.h"
 #include "unordered_map.h"

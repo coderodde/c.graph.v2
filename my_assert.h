@@ -10,7 +10,7 @@
 extern size_t total_assertions;
 extern size_t total_assertion_errors;
 
-static int assert(int cond, char* err_msg, char* file_name, int line)
+int assert(int cond, char* err_msg, char* file_name, int line)
 {
     if (!cond)
     {
@@ -27,7 +27,7 @@ static int assert(int cond, char* err_msg, char* file_name, int line)
     return cond;
 }
 
-static void print_test_results()
+void print_test_results()
 {
     if (total_assertions == 0)
     {

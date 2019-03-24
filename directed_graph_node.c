@@ -211,10 +211,10 @@ void directed_graph_node_clear(directed_graph_node* p_node)
 
 void directed_graph_node_free(directed_graph_node* p_node)
 {
-    unordered_set_iterator* p_iterator;
-    directed_graph_node* p_tmp_node;
-
-    if (!p_node) return;
+    if (!p_node) 
+    {
+        return;
+    }
 
     directed_graph_node_clear(p_node);
     unordered_set_free(p_node->state->p_child_node_set);
@@ -260,9 +260,11 @@ static void directed_graph_node_test_remove_arc()
 
     ASSERT(directed_graph_node_add_arc(node_a, node_b));
     ASSERT(directed_graph_node_has_arc(node_a, node_b));
+    ASSERT(directed_graph_node_has_arc(node_b, node_a) == FALSE);
     ASSERT(directed_graph_node_remove_arc(node_a, node_b));
     ASSERT(directed_graph_node_has_arc(node_a, node_b) == FALSE);
     ASSERT(directed_graph_node_remove_arc(node_a, node_b) == FALSE);
+    ASSERT(directed_graph_node_has_arc(node_b, node_c) == FALSE);
 }
 
 static void directed_graph_node_test_clear()

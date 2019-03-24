@@ -510,17 +510,17 @@ static void list_test_insert()
     ASSERT(0  == (intptr_t) list_get(lst, 3));
     ASSERT(3  == (intptr_t) list_get(lst, 4));
 
-    ASSERT(list_insert(lst, 0, 0));   /* < 0 > */
-    ASSERT(list_insert(lst, 0, -1));  /* < -1, 0 > */
-    ASSERT(list_insert(lst, 2, 3));   /* < -1, 0, 3 > */
-    ASSERT(list_insert(lst, 1, 4));   /* < -1, 4, 0,  3 > */
-    ASSERT(list_insert(lst, 2, 8));   /* < -1, 4, 8, 0, 3 > */
+    ASSERT(list_insert(lst, 0, (void*)(intptr_t) 0));   /* < 0 > */
+    ASSERT(list_insert(lst, 0, (void*)(intptr_t) -1));  /* < -1, 0 > */
+    ASSERT(list_insert(lst, 2, (void*)(intptr_t) 3));   /* < -1, 0, 3 > */
+    ASSERT(list_insert(lst, 1, (void*)(intptr_t) 4));   /* < -1, 4, 0,  3 > */
+    ASSERT(list_insert(lst, 2, (void*)(intptr_t) 8));   /* < -1, 4, 8, 0, 3 > */
 
-    ASSERT(-1 == list_get(lst, 0));
-    ASSERT(4 == list_get(lst, 1));
-    ASSERT(8 == list_get(lst, 2));
-    ASSERT(0 == list_get(lst, 3));
-    ASSERT(3 == list_get(lst, 4));
+    ASSERT(-1 == (intptr_t) list_get(lst, 0));
+    ASSERT(4  == (intptr_t) list_get(lst, 1));
+    ASSERT(8  == (intptr_t) list_get(lst, 2));
+    ASSERT(0  == (intptr_t) list_get(lst, 3));
+    ASSERT(3  == (intptr_t) list_get(lst, 4));
 
     list_free(lst);
 }
@@ -544,7 +544,7 @@ static void list_test_remove_at()
     for (i = 0; i < 10; i++)
     {
         ASSERT(i == (intptr_t) list_get(lst, i));
-        ASSERT(list_push_back(lst, i));
+        ASSERT(list_push_back(lst, (void*) i));
     }
 
     ASSERT((int)list_remove_at(lst, 10) == 10);
@@ -584,19 +584,19 @@ static void list_test_contains()
 
     ASSERT(list_contains(lst, (void*) 2, equals) == 0); /* No 2 anymore. */
 
-    list_push_back(lst, 1);
-    list_push_back(lst, 2);
-    list_push_back(lst, 3);
+    list_push_back(lst, (void*) 1);
+    list_push_back(lst, (void*) 2);
+    list_push_back(lst, (void*) 3);
 
-    ASSERT(list_contains(lst, 1, equals));
-    ASSERT(list_contains(lst, 2, equals));
-    ASSERT(list_contains(lst, 3, equals));
-    ASSERT(list_contains(lst, 4, equals) == 0); /* No 4. */
-    ASSERT(list_contains(lst, 0, equals) == 0); /* No 5. */
+    ASSERT(list_contains(lst, (void*) 1, equals));
+    ASSERT(list_contains(lst, (void*) 2, equals));
+    ASSERT(list_contains(lst, (void*) 3, equals));
+    ASSERT(list_contains(lst, (void*) 4, equals) == 0); /* No 4. */
+    ASSERT(list_contains(lst, (void*) 0, equals) == 0); /* No 5. */
 
     list_remove_at(lst, 1);
 
-    ASSERT(list_contains(lst, 2, equals) == 0); /* No 1 anymore. */
+    ASSERT(list_contains(lst, (void*) 2, equals) == 0); /* No 1 anymore. */
 
     list_free(lst);
 }

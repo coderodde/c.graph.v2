@@ -166,9 +166,9 @@ void queue_test()
     }
 
     ASSERT(queue_size(q) == 0);
-    queue_push_back(q, 10);
+    queue_push_back(q, (void*) 10);
     ASSERT(queue_size(q) == 1);
-    queue_push_back(q, 11);
+    queue_push_back(q, (void*) 11);
     ASSERT(queue_size(q) == 2);
     num = (int) queue_pop_front(q);
     ASSERT(num == 10);
