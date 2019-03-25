@@ -590,7 +590,7 @@ static void unordered_map_test_contains_key()
 
     ASSERT(unordered_map_is_healthy(map));
     ASSERT(unordered_map_contains_key(map, (void*) -2));
-    ASSERT(unordered_map_contains_key(map, (void*) -1));
+    ASSERT(unordered_map_contains_key(map, (void*)-1));  
     ASSERT(unordered_map_contains_key(map, (void*) 0));
     ASSERT(unordered_map_contains_key(map, (void*) 1));
     ASSERT(unordered_map_contains_key(map, (void*) 2));
