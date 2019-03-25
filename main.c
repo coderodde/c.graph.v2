@@ -26,8 +26,8 @@ static void test_all()
     puts("--- Done testing ---");
 }
 
-static const size_t NODES = 10000;
-static const size_t ARCS = 50000;
+static const size_t NODES = 50000;
+static const size_t ARCS = 250000;
 static const double MAXX = 1000.0;
 static const double MAXY = 1000.0;
 static const double MAXZ = 1000.0;
@@ -180,6 +180,8 @@ static void benchmark_unweighted_general_graph()
     }
 
     printf("Valid path: %s\n", is_valid_path(path2) ? "true" : "false");
+    printf("Paths are of the same length: %s\n", 
+           list_size(path1) == list_size(path2) ? "true" : "false");
 }
 
 static void benchmark_all()

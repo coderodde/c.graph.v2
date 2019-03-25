@@ -160,9 +160,10 @@ void queue_test()
     ASSERT(num == 10);
     ASSERT(queue_size(q) == 1);
     num = (intptr_t) queue_pop_front(q);
-
+    ASSERT(num == 11);
+    
     for (i = 0; i < 10; i++) {
-        ASSERT(i == (intptr_t) queue_pop_front(q));
+        ASSERT(queue_pop_front(q) == NULL);
     }
 
     ASSERT(queue_size(q) == 0);

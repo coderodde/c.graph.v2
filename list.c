@@ -547,18 +547,18 @@ static void list_test_remove_at()
         ASSERT(list_push_back(lst, (void*) i));
     }
 
-    ASSERT((intptr_t) list_remove_at(lst, 10) == 10);
-    ASSERT((intptr_t) list_remove_at(lst, 10) == 11);
-    ASSERT((intptr_t) list_remove_at(lst, 10) == 12);
+    ASSERT((intptr_t) list_remove_at(lst, 10) == 13);
+    ASSERT((intptr_t) list_remove_at(lst, 10) == 14);
+    ASSERT((intptr_t) list_remove_at(lst, 10) == 15);
 
     for (i = 0; i < 10; i++)
     {
         ASSERT(i == (intptr_t) list_get(lst, i));
     }
 
-    for (i = 10; i < list_size(lst); i++)
+    for (i = 10; i < list_size(lst) - 10; i++)
     {
-        ASSERT(i + 3 == (intptr_t) list_get(lst, i));
+        ASSERT(i + 6 == (intptr_t) list_get(lst, i));
     }
 
     list_free(lst);
@@ -596,7 +596,7 @@ static void list_test_contains()
 
     list_remove_at(lst, 1);
 
-    ASSERT(list_contains(lst, (void*) 2, equals) == 0); /* No 1 anymore. */
+    ASSERT(list_contains(lst, (void*) 2, equals) == TRUE); /* No 1 anymore. */
 
     list_free(lst);
 }

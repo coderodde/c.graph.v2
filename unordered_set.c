@@ -636,6 +636,7 @@ static void unordered_set_test_iterator()
 
     unordered_set_iterator* iterator;
     int i = 0;
+    void* p;
 
     puts("        unordered_set_test_iterator()");
 
@@ -650,6 +651,8 @@ static void unordered_set_test_iterator()
     {
         ASSERT(unordered_set_iterator_has_next(iterator));
         ASSERT(unordered_set_contains(set, (void*)(intptr_t) i));
+        ASSERT(unordered_set_iterator_next(iterator, &p));
+        ASSERT(i == (intptr_t) p);
     }
 
     ASSERT(unordered_set_iterator_has_next(iterator) == FALSE);
