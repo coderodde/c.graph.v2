@@ -1,3 +1,8 @@
+/******************
+* Allows sprintf. *
+******************/
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "directed_graph_node.h"
 #include "unordered_map.h"
 #include "utils.h"
