@@ -28,12 +28,12 @@ typedef struct unordered_set_state {
     float                  load_factor;
 } unordered_set_state;
 
-typedef struct unordered_set_iterator {
+struct unordered_set_iterator {
     unordered_set*       set;
     unordered_set_entry* next_entry;
     size_t               iterated_count;
     size_t               expected_mod_count;
-} unordered_set_iterator;
+};
 
 static unordered_set_entry* unordered_set_entry_alloc(void* key)
 {
@@ -511,9 +511,9 @@ static void unordered_set_test_add()
 
     for (i = 10; i < 20; i++)
     {
-        ASSERT(unordered_set_contains(set, (void*) i) == FALSE); /*!*/
-        ASSERT(unordered_set_add(set, (void*) i));
-        ASSERT(unordered_set_contains(set, (void*) i));
+        ASSERT(unordered_set_contains(set, (void*)(intptr_t) i) == FALSE); /*!*/
+        ASSERT(unordered_set_add(set,      (void*)(intptr_t) i));
+        ASSERT(unordered_set_contains(set, (void*)(intptr_t) i));
         ASSERT(unordered_set_is_healthy(set));
     }
 
@@ -558,18 +558,18 @@ static void unordered_set_test_contains()
 
     for (i = 0; i < 100; i++)
     {
-        ASSERT(unordered_set_add(set, (void*) i));
+        ASSERT(unordered_set_add(set, (void*)(intptr_t) i));
     }
 
     for (i = 99; i >= 0; i--)
     {
-        ASSERT(unordered_set_contains(set, (void*) i));
+        ASSERT(unordered_set_contains(set, (void*)(intptr_t) i));
     }
 
     for (i = 50; i < 100; i++)
     {
-        ASSERT(unordered_set_remove(set, (void*) i));
-        ASSERT(!unordered_set_contains(set, (void*) i));
+        ASSERT(unordered_set_remove(set,    (void*)(intptr_t) i));
+        ASSERT(!unordered_set_contains(set, (void*)(intptr_t) i));
     }
 
     unordered_set_free(set);
@@ -610,8 +610,8 @@ static void unordered_set_test_clear()
 
     for (i = 0; i < 100; i++)
     {
-        ASSERT(unordered_set_size(set) == i);
-        unordered_set_add(set, (void*) i);
+        ASSERT((int) unordered_set_size(set) == i);
+        unordered_set_add(set, (void*)(intptr_t) i);
     }
 
     unordered_set_clear(set);
@@ -620,7 +620,7 @@ static void unordered_set_test_clear()
 
     for (i = -100; i < 200; i++)
     {
-        ASSERT(!unordered_set_contains(set, (void*) i));
+        ASSERT(!unordered_set_contains(set, (void*)(intptr_t) i));
     }
 
     unordered_set_free(set);
@@ -641,7 +641,7 @@ static void unordered_set_test_iterator()
 
     for (i = 0; i < 100; i++)
     {
-        unordered_set_add(set, (void*) i);
+        unordered_set_add(set, (void*)(intptr_t) i);
     }
 
     iterator = unordered_set_iterator_alloc(set);
@@ -649,7 +649,7 @@ static void unordered_set_test_iterator()
     for (i = 0; i < 100; i++)
     {
         ASSERT(unordered_set_iterator_has_next(iterator));
-        ASSERT(unordered_set_contains(set, (void*) i));
+        ASSERT(unordered_set_contains(set, (void*)(intptr_t) i));
     }
 
     ASSERT(unordered_set_iterator_has_next(iterator) == FALSE);

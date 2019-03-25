@@ -547,13 +547,13 @@ static void list_test_remove_at()
         ASSERT(list_push_back(lst, (void*) i));
     }
 
-    ASSERT((int)list_remove_at(lst, 10) == 10);
-    ASSERT((int)list_remove_at(lst, 10) == 11);
-    ASSERT((int)list_remove_at(lst, 10) == 12);
+    ASSERT((intptr_t) list_remove_at(lst, 10) == 10);
+    ASSERT((intptr_t) list_remove_at(lst, 10) == 11);
+    ASSERT((intptr_t) list_remove_at(lst, 10) == 12);
 
     for (i = 0; i < 10; i++)
     {
-        ASSERT(i == (int) list_get(lst, i));
+        ASSERT(i == (intptr_t) list_get(lst, i));
     }
 
     for (i = 10; i < list_size(lst); i++)

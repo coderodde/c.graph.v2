@@ -49,7 +49,7 @@ OBJECTFILES= \
 
 
 # C Compiler Flags
-CFLAGS=-m32
+CFLAGS=-m32 -ansi -pedantic -Wall -lm
 
 # CC Compiler Flags
 CCFLAGS=
@@ -74,58 +74,47 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/c.graph.v2: ${OBJECTFILES}
 
 ${OBJECTDIR}/bidirectional_breadth_first_search.o: bidirectional_breadth_first_search.c
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.c) -g -Wall -std=c89 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/bidirectional_breadth_first_search.o bidirectional_breadth_first_search.c
+	$(COMPILE.c) -g -Wall -std=c89 -o ${OBJECTDIR}/bidirectional_breadth_first_search.o bidirectional_breadth_first_search.c
 
 ${OBJECTDIR}/breadth_first_search.o: breadth_first_search.c
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.c) -g -Wall -std=c89 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/breadth_first_search.o breadth_first_search.c
+	$(COMPILE.c) -g -Wall -std=c89 -o ${OBJECTDIR}/breadth_first_search.o breadth_first_search.c
 
 ${OBJECTDIR}/directed_graph_node.o: directed_graph_node.c
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.c) -g -Wall -std=c89 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/directed_graph_node.o directed_graph_node.c
+	$(COMPILE.c) -g -Wall -std=c89 -o ${OBJECTDIR}/directed_graph_node.o directed_graph_node.c
 
 ${OBJECTDIR}/directed_graph_weight_function.o: directed_graph_weight_function.c
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.c) -g -Wall -std=c89 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/directed_graph_weight_function.o directed_graph_weight_function.c
+	$(COMPILE.c) -g -Wall -std=c89 -o ${OBJECTDIR}/directed_graph_weight_function.o directed_graph_weight_function.c
 
 ${OBJECTDIR}/list.o: list.c
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.c) -g -Wall -std=c89 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/list.o list.c
+	$(COMPILE.c) -g -Wall -std=c89 -o ${OBJECTDIR}/list.o list.c
 
 ${OBJECTDIR}/main.o: main.c
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.c) -g -Wall -std=c89 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.c
+	$(COMPILE.c) -g -Wall -std=c89 -o ${OBJECTDIR}/main.o main.c
 
 ${OBJECTDIR}/my_assert.o: my_assert.c
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.c) -g -Wall -std=c89 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/my_assert.o my_assert.c
+	$(COMPILE.c) -g -Wall -std=c89 -o ${OBJECTDIR}/my_assert.o my_assert.c
 
 ${OBJECTDIR}/queue.o: queue.c
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.c) -g -Wall -std=c89 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/queue.o queue.c
+	$(COMPILE.c) -g -Wall -std=c89 -o ${OBJECTDIR}/queue.o queue.c
 
 ${OBJECTDIR}/unordered_map.o: unordered_map.c
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.c) -g -Wall -std=c89 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/unordered_map.o unordered_map.c
+	$(COMPILE.c) -g -Wall -std=c89 -o ${OBJECTDIR}/unordered_map.o unordered_map.c
 
 ${OBJECTDIR}/unordered_set.o: unordered_set.c
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.c) -g -Wall -std=c89 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/unordered_set.o unordered_set.c
+	$(COMPILE.c) -g -Wall -std=c89 -o ${OBJECTDIR}/unordered_set.o unordered_set.c
 
 ${OBJECTDIR}/utils.o: utils.c
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.c) -g -Wall -std=c89 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/utils.o utils.c
+	$(COMPILE.c) -g -Wall -std=c89 -o ${OBJECTDIR}/utils.o utils.c
 
 # Subprojects
 .build-subprojects:
@@ -136,8 +125,3 @@ ${OBJECTDIR}/utils.o: utils.c
 
 # Subprojects
 .clean-subprojects:
-
-# Enable dependency checking
-.dep.inc: .depcheck-impl
-
-include .dep.inc

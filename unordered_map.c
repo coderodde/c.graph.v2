@@ -657,7 +657,11 @@ static void unordered_map_test_clear()
 
 static void unordered_map_test_iterator()
 {
-    unordered_map* map = unordered_map_alloc(4, 0.4f, int_hash_function, int_equals);
+    unordered_map* map = unordered_map_alloc(4,
+                                             0.4f, 
+                                             int_hash_function, 
+                                             int_equals);
+    unordered_map_iterator* iter;
     int i;
     int key;
     int value;
@@ -669,7 +673,7 @@ static void unordered_map_test_iterator()
         unordered_map_put(map, (void*)(intptr_t) i, (void*)(intptr_t)(i + 100));
     }
 
-    unordered_map_iterator* iter = unordered_map_iterator_alloc(map);
+    iter = unordered_map_iterator_alloc(map);
 
     ASSERT(unordered_map_iterator_has_next(iter));
     ASSERT(unordered_map_iterator_next(iter, (void*) &key, (void*) &value));

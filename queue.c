@@ -162,7 +162,7 @@ void queue_test()
     num = (intptr_t) queue_pop_front(q);
 
     for (i = 0; i < 10; i++) {
-        ASSERT(i == (int) queue_pop_front(q));
+        ASSERT(i == (intptr_t) queue_pop_front(q));
     }
 
     ASSERT(queue_size(q) == 0);
@@ -170,10 +170,10 @@ void queue_test()
     ASSERT(queue_size(q) == 1);
     queue_push_back(q, (void*) 11);
     ASSERT(queue_size(q) == 2);
-    num = (int) queue_pop_front(q);
+    num = (intptr_t) queue_pop_front(q);
     ASSERT(num == 10);
     ASSERT(queue_size(q) == 1);
-    num = (int) queue_pop_front(q);
+    num = (intptr_t) queue_pop_front(q);
     ASSERT(num == 11);
     ASSERT(queue_size(q) == 0);
 }

@@ -88,7 +88,13 @@ static void benchmark_unweighted_general_graph()
 {
     child_node_iterator children_iterator;
     parent_node_iterator parents_iterator;
+    directed_graph_node* source_node;
+    directed_graph_node* target_node;
     size_t i;
+    list* path1;
+    list* path2;
+    double time_a;
+    double time_b;
 
     unweighted_graph_data* gd =
             create_unweighted_random_graph(
@@ -127,18 +133,13 @@ static void benchmark_unweighted_general_graph()
         directed_graph_parents_iterator_free;
     
     /* Randomize the terminal nodes: */
-    directed_graph_node* source_node = choose(gd->p_node_array, NODES);
-    directed_graph_node* target_node = choose(gd->p_node_array, NODES);
+    source_node = choose(gd->p_node_array, NODES);
+    target_node = choose(gd->p_node_array, NODES);
 
     printf("Source: %s\n", directed_graph_node_to_string(source_node));
     printf("Target: %s\n", directed_graph_node_to_string(target_node));
 
     /* BFS path: */
-    list* path1;
-    list* path2;
-    double time_a;
-    double time_b;
-
     time_a = get_time();
     path1 = breadth_first_search(source_node,
                                  target_node,

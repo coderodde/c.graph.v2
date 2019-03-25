@@ -65,15 +65,17 @@
   <confs>
     <conf name="Debug" type="1">
       <toolsSet>
-        <compilerSet>default</compilerSet>
-        <dependencyChecking>true</dependencyChecking>
+        <compilerSet>GNU|GNU</compilerSet>
+        <dependencyChecking>false</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
+        <prependToolCollectionPath>false</prependToolCollectionPath>
       </toolsSet>
       <compileType>
         <cTool>
           <architecture>1</architecture>
           <standard>2</standard>
           <commandlineTool>gcc</commandlineTool>
+          <commandLine>-ansi -pedantic -Wall -lm</commandLine>
           <useLinkerLibraries>false</useLinkerLibraries>
           <warningLevel>2</warningLevel>
         </cTool>

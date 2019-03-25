@@ -22,13 +22,14 @@ point_3d* random_point(double maxx, double maxy, double maxz)
     return p_ret;
 }
 
-double point_3d_distance(point_3d* p_a, point_3d* p_b)
+extern double point_3d_distance(point_3d* p_a, point_3d* p_b)
 {
     double dx = p_a->x - p_b->x;
     double dy = p_a->y - p_b->y;
     double dz = p_a->z - p_b->z;
 
-    return sqrt(dx * dx + dy * dy + dz * dz);
+/*    return sqrt(dx * dx + dy * dy + dz * dz); */
+    return dx * dx + dy * dy + dz * dz;
 }
 
 directed_graph_node* choose(directed_graph_node** p_table,
@@ -108,17 +109,16 @@ unweighted_graph_data* create_unweighted_random_graph(
     directed_graph_node*   p_tail;
     directed_graph_node*   p_head;
     unordered_map*         p_point_map;
-   
-    point_3d*              p_a = NULL;
-    point_3d*              p_b = NULL;
+    /*point_3d*              p_a;*/
+    /*point_3d*              p_b;*/
     unweighted_graph_data* p_ret;
+    directed_graph_node** p_node_array;
 
     p_ret = malloc(sizeof(*p_ret));
 
     if (!p_ret) return NULL;
 
-    directed_graph_node** p_node_array =
-        malloc(sizeof(directed_graph_node*) * nodes);
+    p_node_array = malloc(sizeof(directed_graph_node*) * nodes);
 
     if (!p_node_array)
     {
@@ -148,7 +148,7 @@ unweighted_graph_data* create_unweighted_random_graph(
     for (i = 0; i < nodes; ++i)
     {
         p_name = calloc(30, sizeof(char));
-        sprintf(p_name, "%d", i);
+        sprintf(p_name, "%lu", (unsigned long) i);
         p_node_array[i] = directed_graph_node_alloc(p_name);
         unordered_map_put(p_point_map,
             p_node_array[i],
@@ -160,10 +160,9 @@ unweighted_graph_data* create_unweighted_random_graph(
         p_tail = choose(p_node_array, nodes);
         p_head = choose(p_node_array, nodes);
 
-        p_a = unordered_map_get(p_point_map, p_tail);
-        p_b = unordered_map_get(p_point_map, p_head);
-        ((intptr_t) p_a)++;
-        ((intptr_t) p_b)++;
+        /*p_a = unordered_map_get(p_point_map, p_tail);*/
+        /*p_b = unordered_map_get(p_point_map, p_head);*/
+        
         directed_graph_node_add_arc(p_tail, p_head);
 
         /*directed_graph_weight_function_put(
