@@ -1,6 +1,7 @@
 #include "my_assert.h"
 #include "unordered_map.h"
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 typedef struct unordered_map_entry {
@@ -508,8 +509,8 @@ void unordered_map_iterator_free(unordered_map_iterator* iterator)
 
 static int int_equals(void* a, void* b)
 {
-    int ia = (int) a;
-    int ib = (int) b;
+    int ia = (intptr_t) a;
+    int ib = (intptr_t) b;
     return ia == ib;
 }
 
@@ -531,7 +532,7 @@ static void unordered_map_test_put()
     {
         ASSERT(unordered_map_is_healthy(map));
         ASSERT(unordered_map_size(map) == i);
-        unordered_map_put(map, (void*) i, (void*)(2 * i));
+        unordered_map_put(map, (void*)(intptr_t) i, (void*)(intptr_t)(2 * i));
         ASSERT(unordered_map_size(map) == i + 1);
     }
 
@@ -540,7 +541,7 @@ static void unordered_map_test_put()
     for (i = 0; i < 30; i++)
     {
         ASSERT(unordered_map_is_healthy(map));
-        ASSERT((int) unordered_map_get(map, (void*) i) == 2 * i);
+        ASSERT((intptr_t) unordered_map_get(map, (void*)(intptr_t) i) == 2 * i);
     }
 
     ASSERT(unordered_map_is_healthy(map));
@@ -559,14 +560,14 @@ static void unordered_map_test_get()
     for (i = 0; i < 30; i++)
     {
         ASSERT(unordered_map_is_healthy(map));
-        unordered_map_put(map, (void*) i, (void*)(2 * i));
+        unordered_map_put(map, (void*)(intptr_t) i, (void*)(intptr_t)(2 * i));
     }
 
     ASSERT(unordered_map_is_healthy(map));
 
     for (i = 0; i < 30; i++)
     {
-        ASSERT((int) unordered_map_get(map, (void*) i) == i * 2);
+        ASSERT((intptr_t) unordered_map_get(map, (void*)(intptr_t) i) == i * 2);
         ASSERT(unordered_map_is_healthy(map));
     }
 
@@ -614,15 +615,14 @@ static void unordered_map_test_remove()
 
     for (i = 0; i < 100; i++)
     {
-        unordered_map_put(map, i, 3 * i);
+        unordered_map_put(map, (void*)(intptr_t) i, (void*)(intptr_t)(3 * i));
     }
 
     unordered_map_is_healthy(map);
     ASSERT(unordered_map_size(map) == 100);
-
-    ASSERT((int) unordered_map_remove(map, 8));
-    ASSERT((int) unordered_map_remove(map, 26));
-    ASSERT((int) unordered_map_remove(map, 29));
+    ASSERT(unordered_map_remove(map, (void*)(intptr_t) 8)  == (void*)(  8 * 3));
+    ASSERT(unordered_map_remove(map, (void*)(intptr_t) 26) == (void*)( 26 * 3));
+    ASSERT(unordered_map_remove(map, (void*)(intptr_t) 29) == (void*)( 29 * 3));
     ASSERT(unordered_map_size(map) == 97);
     ASSERT(unordered_map_is_healthy(map));
 
@@ -638,13 +638,16 @@ static void unordered_map_test_clear()
 
     for (i = 0; i < 100; i++) {
         ASSERT(unordered_map_size(map) == i);
-        ASSERT(unordered_map_put(map, i, i) == NULL);
+        ASSERT(unordered_map_put(map,
+                                 (void*)(intptr_t) i, 
+                                 (void*)(intptr_t) i) == NULL);
+        
         ASSERT(unordered_map_is_healthy(map));
     }
 
     for (i = 0; i < 100; i++)
     {
-        ASSERT(unordered_map_contains_key(map, (void*) i));
+        ASSERT(unordered_map_contains_key(map, (void*)(intptr_t) i));
     }
 
     unordered_map_clear(map);
@@ -654,7 +657,11 @@ static void unordered_map_test_clear()
 
 static void unordered_map_test_iterator()
 {
-    unordered_map* map = unordered_map_alloc(4, 0.4f, int_hash_function, int_equals);
+    unordered_map* map = unordered_map_alloc(4,
+                                             0.4f, 
+                                             int_hash_function, 
+                                             int_equals);
+    unordered_map_iterator* iter;
     int i;
     int key;
     int value;
@@ -663,10 +670,10 @@ static void unordered_map_test_iterator()
 
     for (i = 0; i < 10; i++)
     {
-        unordered_map_put(map, i, i + 100);
+        unordered_map_put(map, (void*)(intptr_t) i, (void*)(intptr_t)(i + 100));
     }
 
-    unordered_map_iterator* iter = unordered_map_iterator_alloc(map);
+    iter = unordered_map_iterator_alloc(map);
 
     ASSERT(unordered_map_iterator_has_next(iter));
     ASSERT(unordered_map_iterator_next(iter, (void*) &key, (void*) &value));
@@ -685,7 +692,7 @@ static void unordered_map_test_iterator()
 
     ASSERT(unordered_map_is_healthy(map));
     ASSERT(!unordered_map_iterator_is_disturbed(iter));
-    ASSERT(101 == (int) unordered_map_remove(map, 1));
+    ASSERT(101 == (intptr_t) unordered_map_remove(map, (void*) 1));
     ASSERT(unordered_map_iterator_is_disturbed(iter));
     ASSERT(unordered_map_is_healthy(map));
 

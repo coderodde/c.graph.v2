@@ -1,6 +1,7 @@
 #include "breadth_first_search.h"
 #include "bidirectional_breadth_first_search.h"
 #include "directed_graph_node.h"
+#include "list.h"
 #include "my_assert.h"
 #include "queue.h"
 #include "unordered_map.h"
@@ -25,8 +26,8 @@ static void test_all()
     puts("--- Done testing ---");
 }
 
-static const size_t NODES = 10000;
-static const size_t ARCS = 50000;
+static const size_t NODES = 50000;
+static const size_t ARCS = 250000;
 static const double MAXX = 1000.0;
 static const double MAXY = 1000.0;
 static const double MAXZ = 1000.0;
@@ -87,16 +88,23 @@ static void benchmark_unweighted_general_graph()
 {
     child_node_iterator children_iterator;
     parent_node_iterator parents_iterator;
+    directed_graph_node* source_node;
+    directed_graph_node* target_node;
     size_t i;
+    list* path1;
+    list* path2;
+    double time_a;
+    double time_b;
 
-    unweighted_graph_data* gd = create_unweighted_random_graph(
-        NODES,
-        ARCS,
-        MAXX,
-        MAXY,
-        MAXZ,
-        directed_graph_node_hash_function,
-        directed_graph_node_equals_function);
+    unweighted_graph_data* gd =
+            create_unweighted_random_graph(
+                NODES,
+                ARCS,
+                MAXX,
+                MAXY,
+                MAXZ,
+                directed_graph_node_hash_function,
+                directed_graph_node_equals_function);
 
     /* Fill the child node generator interface: */
     children_iterator.child_node_iterator_init = 
@@ -125,18 +133,13 @@ static void benchmark_unweighted_general_graph()
         directed_graph_parents_iterator_free;
     
     /* Randomize the terminal nodes: */
-    directed_graph_node* source_node = choose(gd->p_node_array, NODES);
-    directed_graph_node* target_node = choose(gd->p_node_array, NODES);
+    source_node = choose(gd->p_node_array, NODES);
+    target_node = choose(gd->p_node_array, NODES);
 
     printf("Source: %s\n", directed_graph_node_to_string(source_node));
     printf("Target: %s\n", directed_graph_node_to_string(target_node));
 
     /* BFS path: */
-    list* path1;
-    list* path2;
-    double time_a;
-    double time_b;
-
     time_a = get_time();
     path1 = breadth_first_search(source_node,
                                  target_node,
@@ -177,6 +180,8 @@ static void benchmark_unweighted_general_graph()
     }
 
     printf("Valid path: %s\n", is_valid_path(path2) ? "true" : "false");
+    printf("Paths are of the same length: %s\n", 
+           list_size(path1) == list_size(path2) ? "true" : "false");
 }
 
 static void benchmark_all()

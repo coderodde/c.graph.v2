@@ -3,7 +3,7 @@
 #include "queue.h"
 #include "list.h"
 #include "unordered_map.h"
-#include "unordered_set.h" //! REMOVE
+#include "unordered_set.h"
 
 static list* trace_back_path(void* target_node, unordered_map* parents)
 {
@@ -25,7 +25,7 @@ list* breadth_first_search(void* source_node,
                            size_t (*hash_function)   (void*),
                            int    (*equals_function) (void*, void*))
 {
-    queue* q = queue_alloc();// TODO!
+    queue* q = queue_alloc();
     unordered_map* parent_map = 
         unordered_map_alloc(10,
                             1.0f, 
@@ -33,8 +33,6 @@ list* breadth_first_search(void* source_node,
                             equals_function);
     void* current_node;
     void* child_node;
-    size_t children_set_size;
-    int i;
 
     if (!source_node
         || !target_node

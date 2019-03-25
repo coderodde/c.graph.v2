@@ -21,7 +21,7 @@ extern "C" {
     unordered_set* unordered_set_alloc(size_t initial_capacity,
         float load_factor,
         size_t(*p_hash_function)(void*),
-        bool(*p_equals_function)(void*, void*));
+        int (*p_equals_function)(void*, void*));
 
     /***************************************************************************
     * Adds 'p_element' to the set if not already there. Returns true if the    *
@@ -70,7 +70,7 @@ extern "C" {
     /***************************************************************************
     * Returns the number of elements not yet iterated over.                    *
     ***************************************************************************/
-    int unordered_set_iterator_has_next(unordered_set_iterator* p_iterator);
+    size_t unordered_set_iterator_has_next(unordered_set_iterator* p_iterator);
 
     /***************************************************************************
     * Loads the next element in the iteration order. Returns true if advanced  *
@@ -88,7 +88,10 @@ extern "C" {
     * Deallocates the set iterator.                                            *
     ***************************************************************************/
     void unordered_set_iterator_free(unordered_set_iterator* p_iterator);
-
+    
+    /* Contains the unit tests. */
+    void unordered_set_test();
+    
 #ifdef	__cplusplus
 }
 #endif

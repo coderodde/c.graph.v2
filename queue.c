@@ -1,8 +1,9 @@
 #include "my_assert.h"
 #include "queue.h"
 #include <stddef.h>
+#include <stdint.h>
 
-typedef struct {
+typedef struct queue_node {
     struct queue_node* next;
     void* element;
 } queue_node;
@@ -143,22 +144,37 @@ void queue_test()
     ASSERT(q != NULL);
 
     for (i = 0; i < 10; i++) {
-        queue_push_back(q, (void*) i);
+        queue_push_back(q, (void*)(intptr_t) i);
     }
 
     for (i = 0; i < 10; i++) {
-        ASSERT(i == (int) queue_pop_front(q));
+        ASSERT(i == (intptr_t) queue_pop_front(q));
     }
 
     ASSERT(queue_size(q) == 0);
-    queue_push_back(q, 10);
+    queue_push_back(q, (void*) 10);
     ASSERT(queue_size(q) == 1);
-    queue_push_back(q, 11);
+    queue_push_back(q, (void*) 11);
     ASSERT(queue_size(q) == 2);
-    num = (int) queue_pop_front(q);
+    num = (intptr_t) queue_pop_front(q);
     ASSERT(num == 10);
     ASSERT(queue_size(q) == 1);
-    num = (int) queue_pop_front(q);
+    num = (intptr_t) queue_pop_front(q);
+    ASSERT(num == 11);
+    
+    for (i = 0; i < 10; i++) {
+        ASSERT(queue_pop_front(q) == NULL);
+    }
+
+    ASSERT(queue_size(q) == 0);
+    queue_push_back(q, (void*) 10);
+    ASSERT(queue_size(q) == 1);
+    queue_push_back(q, (void*) 11);
+    ASSERT(queue_size(q) == 2);
+    num = (intptr_t) queue_pop_front(q);
+    ASSERT(num == 10);
+    ASSERT(queue_size(q) == 1);
+    num = (intptr_t) queue_pop_front(q);
     ASSERT(num == 11);
     ASSERT(queue_size(q) == 0);
 }

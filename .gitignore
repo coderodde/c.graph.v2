@@ -1,5 +1,7 @@
+build
+dist
+.dep.inc
 .vs
 Debug
 Release
 x64
-c.graph.v2.*

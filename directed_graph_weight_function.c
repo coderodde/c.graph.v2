@@ -125,12 +125,17 @@ void directed_graph_weight_function_free
 
     while (unordered_map_iterator_has_next(p_iterator))
     {
-        unordered_map_iterator_next(p_iterator, &p_node, &p_map);
+        unordered_map_iterator_next(p_iterator, 
+                                    (void**) &p_node, 
+                                    (void**) &p_map);
+        
         p_iterator_2 = unordered_map_iterator_alloc(p_map);
 
         while (unordered_map_iterator_has_next(p_iterator_2))
         {
-            unordered_map_iterator_next(p_iterator_2, &p_node_2, &p_weight);
+            unordered_map_iterator_next(p_iterator_2,
+                                        (void**) &p_node_2,
+                                        (void**) &p_weight);
             free(p_weight);
         }
 

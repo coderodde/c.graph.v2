@@ -87,10 +87,11 @@ directed_graph_node* directed_graph_node_alloc(char* name)
     p_node->state->p_name = calloc(input_name_length,
         sizeof(char));
     mycpy(p_node->state->p_name, name);
-    p_node->state->p_child_node_set = unordered_set_alloc(INITIAL_CAPACITY,
-        LOAD_FACTOR,
-        directed_graph_node_hash_function,
-        directed_graph_node_equals_function);
+    p_node->state->p_child_node_set = 
+            unordered_set_alloc(INITIAL_CAPACITY,
+                                LOAD_FACTOR,
+                                directed_graph_node_hash_function,
+                                directed_graph_node_equals_function);
 
     if (!p_node->state->p_child_node_set)
     {
@@ -184,7 +185,7 @@ void directed_graph_node_clear(directed_graph_node* p_node)
 
     while (unordered_set_iterator_has_next(p_iterator))
     {
-        unordered_set_iterator_next(p_iterator, &p_tmp_node);
+        unordered_set_iterator_next(p_iterator, (void*) &p_tmp_node);
 
         if (strcmp(p_node->state->p_name, p_tmp_node->state->p_name) != 0)
         {
@@ -196,7 +197,7 @@ void directed_graph_node_clear(directed_graph_node* p_node)
 
     while (unordered_set_iterator_has_next(p_iterator))
     {
-        unordered_set_iterator_next(p_iterator, &p_tmp_node);
+        unordered_set_iterator_next(p_iterator, (void**) &p_tmp_node);
 
         if (strcmp(p_node->state->p_name, p_tmp_node->state->p_name) != 0)
         {
@@ -210,10 +211,10 @@ void directed_graph_node_clear(directed_graph_node* p_node)
 
 void directed_graph_node_free(directed_graph_node* p_node)
 {
-    unordered_set_iterator* p_iterator;
-    directed_graph_node* p_tmp_node;
-
-    if (!p_node) return;
+    if (!p_node) 
+    {
+        return;
+    }
 
     directed_graph_node_clear(p_node);
     unordered_set_free(p_node->state->p_child_node_set);
@@ -259,9 +260,11 @@ static void directed_graph_node_test_remove_arc()
 
     ASSERT(directed_graph_node_add_arc(node_a, node_b));
     ASSERT(directed_graph_node_has_arc(node_a, node_b));
+    ASSERT(directed_graph_node_has_arc(node_b, node_a) == FALSE);
     ASSERT(directed_graph_node_remove_arc(node_a, node_b));
     ASSERT(directed_graph_node_has_arc(node_a, node_b) == FALSE);
     ASSERT(directed_graph_node_remove_arc(node_a, node_b) == FALSE);
+    ASSERT(directed_graph_node_has_arc(node_b, node_c) == FALSE);
 }
 
 static void directed_graph_node_test_clear()

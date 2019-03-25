@@ -119,8 +119,8 @@ extern "C" {
         const double maxy,
         const double maxz,
         size_t (*hash_function)(void*),
-        int (*equals_function)(void*));
-
+        int (*equals_function)(void*, void*));
+    
     list* traceback_path(directed_graph_node* p_target,
         unordered_map* p_parent_map);
 

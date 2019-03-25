@@ -96,6 +96,9 @@ extern "C" {
     * Clears and deallocates the list.                                         *
     ***************************************************************************/
     void list_free(list* my_list);
+    
+    /* Contains the unit tests. */
+    void list_test();
 
 #ifdef	__cplusplus
 }
