@@ -8,20 +8,52 @@
 extern "C" {
 #endif
 
+    typedef struct unordered_set_entry {
+        void*                       key;
+        struct unordered_set_entry* chain_next;
+        struct unordered_set_entry* prev;
+        struct unordered_set_entry* next;
+    } unordered_set_entry;
+
     typedef struct unordered_set {
-        struct unordered_set_state* state;
+        unordered_set_entry**    table;
+        unordered_set_entry*     head;
+        unordered_set_entry*     tail;
+        size_t (*hash_function) (void*);
+        int (*equals_function)  (void*, void*);
+        size_t                   mod_count;
+        size_t                   table_capacity;
+        size_t                   size;
+        size_t                   mask;
+        size_t                   max_allowed_size;
+        float                    load_factor;
     } unordered_set;
 
-    typedef struct unordered_set_iterator unordered_set_iterator;
+    typedef struct unordered_set_iterator {
+        unordered_set*       set;
+        unordered_set_entry* next_entry;
+        size_t               iterated_count;
+        size_t               expected_mod_count;
+    } unordered_set_iterator;
 
     /***************************************************************************
     * Allocates a new, empty set with given hash function and given equality   *
     * testing function.                                                        *
     ***************************************************************************/
     unordered_set* unordered_set_alloc(size_t initial_capacity,
-        float load_factor,
-        size_t(*p_hash_function)(void*),
-        int (*p_equals_function)(void*, void*));
+                                       float load_factor,
+                                       size_t (*p_hash_function)(void*),
+                                       int (*p_equals_function)(void*, void*));
+
+    /***************************************************************************
+    * Initializes the given memory area to represent an unordered, hash table  *
+    * -based set.                                                              *
+    ***************************************************************************/
+    void unordered_set_init(unordered_set* p_memory,
+                            size_t initial_capacity,
+                            float load_factor,
+                            size_t(*p_hash_function)(void*),
+                            int(*p_equals_function)(void*, void*));
 
     /***************************************************************************
     * Adds 'p_element' to the set if not already there. Returns true if the    *
@@ -59,13 +91,23 @@ extern "C" {
     * The user is responsible for deallocating the actual data stored in the   *
     * set.                                                                     *
     ***************************************************************************/
-    void unordered_set_free(unordered_set* p_set);
+    void unordered_set_free(unordered_set** p_set);
+
+    /***************************************************************************
+    * Destroys but does not deallocates the set.                               *
+    ***************************************************************************/
+    void unordered_set_destroy(unordered_set* p_set);
 
     /***************************************************************************
     * Returns the iterator over the set. The nodes are iterated in insertion   *
     * order.                                                                   *
     ***************************************************************************/
     unordered_set_iterator* unordered_set_iterator_alloc(unordered_set* p_set);
+
+    /***************************************************************************
+    * Constructs a set iterator view over the set.                             *
+    ***************************************************************************/
+    void unordered_set_iterator_init(unordered_set*  p_set);
 
     /***************************************************************************
     * Returns the number of elements not yet iterated over.                    *
@@ -83,6 +125,11 @@ extern "C" {
     * Returns true if the set was modified during the iteration.               *
     ***************************************************************************/
     int unordered_set_iterator_is_disturbed(unordered_set_iterator* p_iterator);
+
+    /***************************************************************************
+    * Destructs an iterator over a set view.                                   *
+    ***************************************************************************/
+    void unordered_set_iterator_destruct(unordered_set_iterator** p_iterator);
 
     /***************************************************************************
     * Deallocates the set iterator.                                            *

@@ -9,9 +9,20 @@
 extern "C" {
 #endif
 
+#define TRUE 1
+#define FALSE 0
+
     typedef struct directed_graph_node {
-        struct directed_graph_node_state* state;
+        int           m_id;
+        unordered_set m_parent_node_set;
+        unordered_set m_child_node_set;
     } directed_graph_node;
+
+    int directed_graph_nodes_equal_function(void* a, void* b);
+
+    size_t directed_graph_node_hash_function(void* v);
+
+    typedef struct directed_graph_node directed_graph_node;
 
     typedef struct directed_graph_node_parent_node_generator {
         void* (*expand)(void*);
@@ -22,19 +33,15 @@ extern "C" {
     } directed_graph_node_child_node_generator;
 
     /***************************************************************************
-    * The function for testing node equality.                                  *
+    * Allocates a new directed graph node with given ID, initializes it and    *
+    * returns it.                                                              *
     ***************************************************************************/
-    int equals_function(void* a, void* b);
+    directed_graph_node* directed_graph_node_alloc(int id);
 
     /***************************************************************************
-    * The function for computing the hash values for nodes.                    *
+    * Initializes a given memory area to a directed graph node.                *
     ***************************************************************************/
-    size_t hash_function(void* v);
-
-    /***************************************************************************
-    * Allocates a new directed graph node with given name.                     *
-    ***************************************************************************/
-    directed_graph_node* directed_graph_node_alloc(char* name);
+    void directed_graph_node_init(directed_graph_node* p_node, int id);
 
     /***************************************************************************
     * Creates an arc (p_tail, p_head) and returns true if the arc is actually  *
@@ -83,9 +90,10 @@ extern "C" {
     ***************************************************************************/
     void directed_graph_node_free(directed_graph_node* p_node);
 
+    void directed_graph_node_destruct(directed_graph_node* p_node);
+
 
 #ifdef  __cplusplus
-}
+} 
 #endif
-
 #endif  /* DIRECTED_GRAPH_NODE_H */

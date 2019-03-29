@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include "directed_graph_node.h"
 #include "my_assert.h"
 #include "unordered_set.h"
@@ -8,130 +9,127 @@
 #define FALSE 0
 #define TRUE 1
 
-typedef struct directed_graph_node_state {
-    char* p_name;
-    struct unordered_set* p_parent_node_set;
-    struct unordered_set* p_child_node_set;
-} directed_graph_node_state;
-
 static const int INITIAL_CAPACITY = 16;
 static const int MAXIMUM_NAME_STRING_LEN = 80;
-static const float LOAD_FACTOR = 1.0f;
-/*
-static int equals_function(void* a, void* b)
+static const int MINIMUM_LOAD_FACTOR = 0.2f;
+
+size_t directed_graph_node_hash_function(void* v)
 {
-    if (!a || !b) return FALSE;
-
-    return strcmp(((directed_graph_node*) a)->state->p_name,
-                  ((directed_graph_node*) b)->state->p_name) == 0;
-}*/
-
-/* TODO: Come up with a better hash function. */
-/*
-size_t hash_function(void* v)
-{
-    size_t ret;
-    size_t i;
-    char* pc;
-
-    if (!v) return 0;
-
-    ret = 0;
-    i = 1;
-    pc = ((directed_graph_node*)v)->state->p_name;
-
-    while (*pc)
-    {
-        ret += *pc * i;
-        ++i;
-        ++pc;
-    }
-
-    return ret;
-}*/
-
-static const size_t MAXIMUM_NAME_LENGTH = 80;
-
-void mycpy(char* dest, const char* src)
-{
-    size_t len = strlen(src);
-    size_t i;
-
-    dest[len] = 0;
-
-    for (i = 0; i < len; i++)
-    {
-        dest[i] = src[i];
-    }
+    return (size_t)((directed_graph_node*) v)->m_id;
 }
 
-directed_graph_node* directed_graph_node_alloc(char* name)
+int directed_graph_nodes_equals_function(void* a, void* b)
+{
+    return ((directed_graph_node*) a)->m_id ==
+           ((directed_graph_node*) b)->m_id;
+}
+
+static size_t fix_initial_capacity(size_t initial_capacity)
+{
+    size_t result_capacity = 1;
+    while (result_capacity <=  initial_capacity)
+    {
+        result_capacity <<= 1;
+    }
+    return result_capacity;
+}
+
+static float fix_load_factor(float requested_load_factor)
+{
+    return requested_load_factor < MINIMUM_LOAD_FACTOR ?
+           MINIMUM_LOAD_FACTOR :
+           requested_load_factor;
+}
+
+int directed_graph_node_construct(directed_graph_node* p_node,
+                                  int      id,
+                                  size_t   initial_capacity,
+                                  float    load_factor,
+                                  size_t (*hash_function)(void*),
+                                  int    (*equals_function)(void*, void*))
+{
+    directed_graph_node* node = (directed_graph_node*) p_node;
+
+    if (!p_node
+        || fix_initial_capacity(initial_capacity)
+        || fix_load_factor(load_factor)
+        || !hash_function
+        || !equals_function)
+    {
+        return FALSE;
+    }
+
+    node->m_id = id;
+    unordered_set_init(&node->m_child_node_set,
+                       initial_capacity, 
+                       load_factor, 
+                       hash_function, 
+                       equals_function);
+
+    unordered_set_init(&node->m_parent_node_set,
+                       initial_capacity,
+                       load_factor,
+                       hash_function,
+                       equals_function);
+}
+
+void directed_graph_node_init(directed_graph_node* p_node, 
+                              int id,
+                              size_t initial_capacity,                          
+                              float load_factor,
+                              size_t (*p_hash_function)(void*),
+                              int (*p_equals_function)(void*, void*))
+{
+    p_node->m_id = id;
+
+    unordered_set_init(&p_node->m_child_node_set,
+                       initial_capacity,
+                       load_factor,
+                       p_hash_function,
+                       p_equals_function);
+
+    unordered_set_init(&p_node->m_parent_node_set,
+                       initial_capacity,
+                       load_factor,
+                       p_hash_function,
+                       p_equals_function);
+}
+
+directed_graph_node* directed_graph_node_alloc(int id)
 {
     directed_graph_node* p_node = malloc(sizeof(*p_node));
-    size_t input_name_length;
 
     if (!p_node)
     {
         return NULL;
     }
 
-    p_node->state = malloc(sizeof(*p_node->state));
-
-    if (!p_node->state)
-    {
-        free(p_node);
-        return NULL;
-    }
-
-    input_name_length = strlen(name);
-    p_node->state->p_name = calloc(input_name_length,
-        sizeof(char));
-    mycpy(p_node->state->p_name, name);
-    p_node->state->p_child_node_set = 
-            unordered_set_alloc(INITIAL_CAPACITY,
-                                LOAD_FACTOR,
-                                directed_graph_node_hash_function,
-                                directed_graph_node_equals_function);
-
-    if (!p_node->state->p_child_node_set)
-    {
-        free(p_node->state->p_name);
-        free(p_node->state);
-        free(p_node);
-        return NULL;
-    }
-
-    p_node->state->p_parent_node_set =
-        unordered_set_alloc(INITIAL_CAPACITY,
-            LOAD_FACTOR,
-            directed_graph_node_hash_function,
-            directed_graph_node_equals_function);
-
-    if (!p_node->state->p_parent_node_set)
-    {
-        unordered_set_free(p_node->state->p_child_node_set);
-        free(p_node->state->p_name);
-        free(p_node->state);
-        free(p_node);
-        return NULL;
-    }
+    directed_graph_node_init(p_node,
+                             id,
+                             5,
+                             1.0f,
+                             directed_graph_node_hash_function,
+                             directed_graph_node_hash_function);
 
     return p_node;
 }
 
 int directed_graph_node_add_arc(directed_graph_node* p_tail,
-    directed_graph_node* p_head)
+                                directed_graph_node* p_head)
 {
     if (!p_tail || !p_head) return FALSE;
 
-    if (!unordered_set_add(p_tail->state->p_child_node_set, p_head))
+
+    /* Attempt to add p_head to the child list of p_tail: */
+    if (!unordered_set_add(&p_tail->m_child_node_set, p_head))
     {
         return FALSE;
     }
 
-    if (!unordered_set_add(p_head->state->p_parent_node_set, p_tail))
+    /* Attempt to add p_tail to the parent list of p_head: */
+    if (!unordered_set_add(&p_head->m_parent_node_set, p_tail))
     {
-        unordered_set_remove(p_tail->state->p_child_node_set, p_head);
+        unordered_set_remove(&p_tail->m_child_node_set, p_head);
         return FALSE;
     }
 
@@ -143,35 +141,37 @@ int directed_graph_node_has_arc(directed_graph_node* p_node,
 {
     if (!p_node || !p_child_candidate) return FALSE;
 
-    return unordered_set_contains(p_node->state->p_child_node_set,
+    return unordered_set_contains(&p_node->m_child_node_set,
                                   p_child_candidate);
 }
 
 int directed_graph_node_remove_arc(directed_graph_node* p_tail,
-    directed_graph_node* p_head)
+                                   directed_graph_node* p_head)
 {
     if (!p_tail || !p_head) return FALSE;
 
-    unordered_set_remove(p_tail->state->p_child_node_set, p_head);
-    unordered_set_remove(p_head->state->p_parent_node_set, p_tail);
+    unordered_set_remove(&p_tail->m_child_node_set, p_head);
+    unordered_set_remove(&p_head->m_parent_node_set, p_tail);
     return TRUE;
 }
 
 char* directed_graph_node_to_string(directed_graph_node* p_node)
 {
-    return p_node->state->p_name;
+    char* str = calloc(11, sizeof(char));
+    sprintf(str, "%d", p_node->m_id);
+    return str;
 }
 
 unordered_set*
     directed_graph_node_children_set(directed_graph_node* p_node)
 {
-    return p_node ? p_node->state->p_child_node_set : NULL;
+    return p_node ? &p_node->m_child_node_set : NULL;
 }
 
 unordered_set*
     directed_graph_node_parent_set(directed_graph_node* p_node)
 {
-    return p_node ? p_node->state->p_parent_node_set : NULL;
+    return p_node ? &p_node->m_parent_node_set : NULL;
 }
 
 void directed_graph_node_clear(directed_graph_node* p_node)
@@ -181,46 +181,58 @@ void directed_graph_node_clear(directed_graph_node* p_node)
 
     if (!p_node) return;
 
-    p_iterator = unordered_set_iterator_alloc(p_node->state->p_child_node_set);
+    /* use here the iterator */
+    p_iterator = unordered_set_iterator_alloc(&p_node->m_child_node_set);
 
+    /* Proceed to removing this node (p_node) from the parent/child lists. */
     while (unordered_set_iterator_has_next(p_iterator))
     {
         unordered_set_iterator_next(p_iterator, (void*) &p_tmp_node);
 
-        if (strcmp(p_node->state->p_name, p_tmp_node->state->p_name) != 0)
+        if (p_node->m_id != p_tmp_node->m_id)
         {
-            unordered_set_remove(p_tmp_node->state->p_parent_node_set, p_node);
+            unordered_set_remove(&p_tmp_node->m_parent_node_set, p_node);
         }
     }
 
-    p_iterator = unordered_set_iterator_alloc(p_node->state->p_parent_node_set);
+    p_iterator = unordered_set_iterator_alloc(&p_node->m_parent_node_set);
 
     while (unordered_set_iterator_has_next(p_iterator))
     {
         unordered_set_iterator_next(p_iterator, (void**) &p_tmp_node);
 
-        if (strcmp(p_node->state->p_name, p_tmp_node->state->p_name) != 0)
+        if (p_node->m_id != p_tmp_node->m_id != 0)
         {
-            unordered_set_remove(p_tmp_node->state->p_child_node_set, p_node);
+            unordered_set_remove(&p_tmp_node->m_child_node_set, p_node);
         }
     }
 
-    unordered_set_clear(p_node->state->p_parent_node_set);
-    unordered_set_clear(p_node->state->p_child_node_set);
+    unordered_set_clear(&p_node->m_parent_node_set);
+    unordered_set_clear(&p_node->m_child_node_set);
 }
 
-void directed_graph_node_free(directed_graph_node* p_node)
+void directed_graph_node_destruct(directed_graph_node* p_node)
 {
-    if (!p_node) 
+    if (p_node)
+    {
+        unordered_set_destroy(&p_node->m_child_node_set);
+        unordered_set_destroy(&p_node->m_parent_node_set);
+    }
+}
+
+void directed_graph_node_free(directed_graph_node** p_node)
+{
+    directed_graph_node* node;
+
+    if (!p_node || !*p_node) 
     {
         return;
     }
 
-    directed_graph_node_clear(p_node);
-    unordered_set_free(p_node->state->p_child_node_set);
-    unordered_set_free(p_node->state->p_parent_node_set);
-    free(p_node->state);
-    free(p_node);
+    node = (directed_graph_node*) *p_node;
+    directed_graph_node_destruct(node);
+    free(node);
+    *p_node = NULL;
 }
 
 static void directed_graph_node_test_add_arc()

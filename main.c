@@ -12,8 +12,10 @@
 
 #define _C_GRAPH_V2_TEST
 #define _C_GRAPH_V2_BENCHMARK
+#undef  _C_GRAPH_V2_BENCHMARK
 
 #define FALSE 0
+#define TRUE 1
 
 static void test_all()
 {
@@ -37,8 +39,9 @@ static void directed_graph_children_iterator_init(
     child_node_iterator* cni, 
     void* node)
 {
-    unordered_set* p_node_children_set = directed_graph_node_children_set(node);
-    cni->state = unordered_set_iterator_alloc(p_node_children_set);
+    cni->state = 
+        (void*)
+        unordered_set_iterator_alloc((directed_graph_node*) node);
 }
 
 static int directed_graph_children_iterator_has_next(
@@ -104,7 +107,7 @@ static void benchmark_unweighted_general_graph()
                 MAXY,
                 MAXZ,
                 directed_graph_node_hash_function,
-                directed_graph_node_equals_function);
+                directed_graph_nodes_equal_function);
 
     /* Fill the child node generator interface: */
     children_iterator.child_node_iterator_init = 
@@ -145,7 +148,7 @@ static void benchmark_unweighted_general_graph()
                                  target_node,
                                  &children_iterator,
                                  directed_graph_node_hash_function,
-                                 directed_graph_node_equals_function);
+                                 directed_graph_nodes_equal_function);
     time_b = get_time();
 
     puts("Shortest path from source to target using BFS:");
@@ -167,7 +170,7 @@ static void benchmark_unweighted_general_graph()
                                                &children_iterator,
                                                &parents_iterator,
                                                directed_graph_node_hash_function,
-                                               directed_graph_node_equals_function);
+                                               directed_graph_nodes_equal_function);
     time_b = get_time();
 
     puts("Shortest path from source to target using bidirectional BFS:");

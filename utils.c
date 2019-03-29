@@ -1,6 +1,6 @@
-/******************
-* Allows sprintf. *
-******************/
+/*****************************
+* Allows sprintf on Windows. *
+*****************************/
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "directed_graph_node.h"
@@ -42,37 +42,6 @@ directed_graph_node* choose(directed_graph_node** p_table,
 {
     size_t index = rand() % size;
     return p_table[index];
-}
-
-int directed_graph_node_equals_function(void* a, void* b)
-{
-    directed_graph_node* node_a = (directed_graph_node*) a;
-    directed_graph_node* node_b = (directed_graph_node*) b;
-    char* string_a = directed_graph_node_to_string(node_a);
-    char* string_b = directed_graph_node_to_string(node_b);
-    return strcmp(string_a, string_b) == 0;
-}
-
-size_t directed_graph_node_hash_function(void* v)
-{
-    size_t ret;
-    size_t i;
-    char* pc;
-
-    if (!v) return 0;
-
-    ret = 0;
-    i = 1;
-    pc = directed_graph_node_to_string(v);
-
-    while (*pc)
-    {
-        ret += *pc * i;
-        ++i;
-        ++pc;
-    }
-
-    return ret;
 }
 
 list*

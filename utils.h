@@ -10,7 +10,6 @@
 extern "C" {
 #endif
 
-
     /*******************************************************************************
     * Defines the API before client graph and this BFS implementation.             *
     *******************************************************************************/
@@ -41,10 +40,7 @@ extern "C" {
         * Frees the resources held by the iterator. *
         ********************************************/
         void (*child_node_iterator_free)(struct child_node_iterator* me);
-    }
-    child_node_iterator;
-
-
+    } child_node_iterator;
 
     /*******************************************************************************
     * Defines the API before client graph and this BFS implementation.             *
@@ -123,9 +119,9 @@ extern "C" {
     
     list* traceback_path(directed_graph_node* p_target,
         unordered_map* p_parent_map);
-
+    /*
     int directed_graph_node_equals_function(void*, void*);
-    size_t directed_graph_node_hash_function(void*);
+    size_t directed_graph_node_hash_function(void*);*/
 
     int is_valid_path(list* p_path);
     double get_time();
