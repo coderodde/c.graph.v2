@@ -10,6 +10,7 @@ extern "C" {
 
     typedef struct unordered_set_entry {
         void*                       key;
+        size_t                      hash_value;
         struct unordered_set_entry* chain_next;
         struct unordered_set_entry* prev;
         struct unordered_set_entry* next;
@@ -49,11 +50,11 @@ extern "C" {
     * Initializes the given memory area to represent an unordered, hash table  *
     * -based set.                                                              *
     ***************************************************************************/
-    void unordered_set_init(unordered_set* p_memory,
-                            size_t initial_capacity,
-                            float load_factor,
-                            size_t(*p_hash_function)(void*),
-                            int(*p_equals_function)(void*, void*));
+    int unordered_set_init(unordered_set* p_memory,
+                           size_t initial_capacity,
+                           float load_factor,
+                           size_t(*p_hash_function)(void*),
+                           int(*p_equals_function)(void*, void*));
 
     /***************************************************************************
     * Adds 'p_element' to the set if not already there. Returns true if the    *
@@ -94,7 +95,7 @@ extern "C" {
     void unordered_set_free(unordered_set** p_set);
 
     /***************************************************************************
-    * Destroys but does not deallocates the set.                               *
+    * Destroys but does not deallocate the set.                                *
     ***************************************************************************/
     void unordered_set_destroy(unordered_set* p_set);
 

@@ -8,12 +8,34 @@
 extern "C" {
 #endif
 
+    typedef struct unordered_map_entry {
+        void*                       key;
+        void*                       value;
+        size_t                      key_hash_value;
+        struct unordered_map_entry* chain_next;
+        struct unordered_map_entry* prev;
+        struct unordered_map_entry* next;
+    } unordered_map_entry;
+
     typedef struct unordered_map {
-        struct unordered_map_state* state;
+        unordered_map_entry** table;
+        unordered_map_entry*  head;
+        unordered_map_entry*  tail;
+        size_t(*hash_function)(void*);
+        int(*equals_function)(void*, void*);
+        size_t                mod_count;
+        size_t                table_capacity;
+        size_t                size;
+        size_t                max_allowed_size;
+        size_t                mask;
+        float                 load_factor;
     } unordered_map;
 
     typedef struct unordered_map_iterator {
-        struct unordered_map_iterator_state* state;
+        unordered_map*       map;
+        unordered_map_entry* next_entry;
+        size_t               iterated_count;
+        size_t               expected_mod_count;
     } unordered_map_iterator;
 
     /***************************************************************************
@@ -21,10 +43,19 @@ extern "C" {
     * testing function.                                                        *
     ***************************************************************************/
     unordered_map* unordered_map_alloc
-    (size_t   initial_capacity,
+       (size_t   initial_capacity,
         float    load_factor,
         size_t (*hash_function)(void*),
-        int (*equals_function)(void*, void*));
+        int    (*equals_function)(void*, void*));
+
+    /***************************************************************************
+    * Initializes a given map to an empty state.                               *
+    ***************************************************************************/
+    int unordered_map_init(unordered_map* p_map,
+                           size_t initial_capacity,
+                           float load_factor,
+                           size_t(*p_hash_function)(void*),
+                           int(*p_equals_function(void*, void*));
 
     /***************************************************************************
     * If p_map does not contain the key p_key, inserts it in the map,          *
@@ -71,7 +102,12 @@ extern "C" {
     * The user is responsible for deallocating the actual data stored in the   *
     * map.                                                                     *
     ***************************************************************************/
-    void unordered_map_free(unordered_map* map);
+    void unordered_map_free(unordered_map** map);
+
+    /***************************************************************************
+    * Destroys but does not deallocate the map.                                *
+    ***************************************************************************/
+    void unordered_map_destroy(unordered_map* map);
 
     /***************************************************************************
     * Returns the iterator over the map. The entries are iterated in insertion *
@@ -87,10 +123,9 @@ extern "C" {
     /***************************************************************************
     * Loads the next entry in the iteration order.                             *
     ***************************************************************************/
-    int unordered_map_iterator_next(
-        unordered_map_iterator* iterator,
-        void** key_pointer,
-        void** value_pointer);
+    int unordered_map_iterator_next(unordered_map_iterator* iterator,
+                                    void** key_pointer,
+                                    void** value_pointer);
 
     /***************************************************************************
     * Returns a true if the map was modified during the iteration.             *

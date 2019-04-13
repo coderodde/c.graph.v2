@@ -17,15 +17,11 @@ static unordered_set_entry* unordered_set_entry_alloc(void* key)
     }
 
     entry->key = key;
-    entry->chain_next = NULL;
-    entry->next = NULL;
-    entry->prev = NULL;
-
     return entry;
 }
 
-static const float  MINIMUM_LOAD_FACTOR = 0.2f;
-static const int MINIMUM_INITIAL_CAPACITY = 16;
+static const float MINIMUM_LOAD_FACTOR = 0.3f;
+static const int MINIMUM_INITIAL_CAPACITY = 4;
 
 static float maxf(float a, float b)
 {
@@ -51,38 +47,51 @@ static float fix_load_factor(float load_factor)
 *******************************************************************************/
 static size_t fix_initial_capacity(size_t initial_capacity)
 {
-    size_t ret;
-
-    initial_capacity = maxi(initial_capacity, MINIMUM_INITIAL_CAPACITY);
-    ret = 1;
+    size_t ret = 1;
 
     while (ret < initial_capacity)
     {
         ret <<= 1;
     }
-
+    
     return ret;
 }
 
-void unordered_set_init(unordered_set* p_memory,
-                        size_t initial_capacity,
-                        float load_factor,
-                        size_t(*p_hash_function)(void*),
-                        int(*p_equals_function)(void*, void*))
+int unordered_set_init(unordered_set* p_memory,
+                       size_t initial_capacity,
+                       float load_factor,
+                       size_t(*p_hash_function)(void*),
+                       int(*p_equals_function)(void*, void*))
 {
-    p_memory->hash_function = p_hash_function;
-    p_memory->equals_function = p_equals_function;
-    p_memory->table_capacity = fix_initial_capacity(initial_capacity);
-    p_memory->load_factor = fix_load_factor(load_factor);
+    if (!p_memory || !p_hash_function || !p_equals_function)
+    {
+        return FALSE;
+    }
 
-    p_memory->head = NULL;
-    p_memory->tail = NULL;
-    p_memory->size = 0;
-    p_memory->mod_count = 0;
-    
-    p_memory->table = calloc(p_memory->table_capacity, sizeof(*p_memory->table[0]));
-    p_memory->mask = initial_capacity - 1;
-    p_memory->max_allowed_size = (size_t)(initial_capacity * load_factor);
+    initial_capacity           = fix_initial_capacity(initial_capacity);
+    load_factor                = fix_load_factor(load_factor);
+    p_memory->hash_function    = p_hash_function;
+    p_memory->equals_function  = p_equals_function;
+    p_memory->table_capacity   = initial_capacity;
+    p_memory->load_factor      = load_factor;
+    p_memory->head             = NULL;
+    p_memory->tail             = NULL;
+    p_memory->size             = 0;
+    p_memory->mod_count        = 0;
+    p_memory->table            = 
+        calloc(p_memory->table_capacity,
+               sizeof(p_memory->table[0]));
+
+    if (!p_memory->table)
+    {
+        return FALSE;
+    }
+
+    p_memory->mask             = p_memory->table_capacity - 1;
+    p_memory->max_allowed_size =
+        (size_t)(initial_capacity * load_factor);
+
+    return TRUE;
 }
 
 unordered_set* unordered_set_alloc(size_t initial_capacity,
@@ -91,11 +100,26 @@ unordered_set* unordered_set_alloc(size_t initial_capacity,
                                    int (*p_equals_function)(void*, void*))
 {
     unordered_set* set = malloc(sizeof(*set));
-    unordered_set_init(set,
-                       initial_capacity,
-                       load_factor,
-                       p_hash_function,
-                       p_equals_function);
+    int initialization_succeeded;
+
+    if (!set || !p_hash_function || !p_equals_function)
+    {
+        return NULL;
+    }
+
+    initialization_succeeded = 
+        unordered_set_init(set,
+                           initial_capacity,
+                           load_factor,
+                           p_hash_function,
+                           p_equals_function);
+
+    if (!initialization_succeeded)
+    {
+        free(set);
+        return NULL;
+    }
+
     return set;
 }
 
@@ -124,16 +148,18 @@ static int ensure_capacity(unordered_set* set)
     /* Rehash the entries. */
     for (entry = set->head; entry; entry = entry->next)
     {
-        index = set->hash_function(entry->key) & new_mask;
+        index = entry->hash_value & new_mask;
         entry->chain_next = new_table[index];
         new_table[index] = entry;
     }
 
     free(set->table);
+
     set->table          = new_table;
     set->table_capacity = new_capacity;
     set->mask           = new_mask;
     set->max_allowed_size = (size_t)(new_capacity * set->load_factor);
+
     return TRUE;
 }
 
@@ -142,14 +168,22 @@ int unordered_set_add(unordered_set* set, void* key)
     size_t index;
     size_t hash_value;
     int recompute_hash_table;
-    unordered_set_entry* entry;
+    unordered_set_entry* entry = unordered_set_entry_alloc(key);
+
+    if (!entry)
+    {
+        return FALSE;
+    }
 
     hash_value = set->hash_function(key);
     index = hash_value & set->mask;
 
     for (entry = set->table[index]; entry; entry = entry->chain_next)
     {
-        if (set->equals_function(entry->key, key))
+        /* Since hash values are integers, we can speed up the following if 
+           statement a bit by comparing the hash values first: */
+        if (entry->hash_value == hash_value 
+            && set->equals_function(entry->key, key))
         {
             /* key is already in this set: */
             return FALSE;
@@ -158,13 +192,13 @@ int unordered_set_add(unordered_set* set, void* key)
 
     if (recompute_hash_table = ensure_capacity(set))
     {
-        /* Recompute the index since it is possibly changed by 'ensure_capacity' */
+        /* Recompute the index since it is possibly changed by 
+          'ensure_capacity' */
         index = hash_value & set->mask;
     }
 
-    /* Add the new element to this set: */
-    entry = unordered_set_entry_alloc(key);
     entry->chain_next = set->table[index];
+    entry->hash_value = hash_value;
     set->table[index] = entry;
 
     /* Link the new entry to the tail of the list. */
@@ -172,97 +206,161 @@ int unordered_set_add(unordered_set* set, void* key)
     {
         set->head = entry;
         set->tail = entry;
+        entry->prev = NULL;
+        entry->next = NULL;
     }
     else
     {
+        /* Let 'entry' be at the tail: */
         set->tail->next = entry;
         entry->prev = set->tail;
+        entry->next = NULL;
         set->tail = entry;
     }
 
     set->size++;
     set->mod_count++;
-
     return TRUE; 
 }
 
 int unordered_set_contains(unordered_set* set, void* key)
 {
     size_t index;
+    size_t hash_value;
     unordered_set_entry* p_entry;
 
     if (!set)
     {
-        return false;
+        return FALSE;
     }
 
-    index = set->hash_function(key) & set->mask;
+    hash_value = set->hash_function(key);
+    index = hash_value & set->mask;
 
     for (p_entry = set->table[index]; p_entry; p_entry = p_entry->chain_next)
     {
-        if (set->equals_function(key, p_entry->key))
+        if (p_entry->hash_value == hash_value 
+            && set->equals_function(key, p_entry->key))
         {
-            return true;
+            return TRUE;
         }
     }
 
-    return false;
+    return FALSE;
+}
+
+//! Store the hash in nodes?
+/* Unlinks a set entry from its collision chain: */
+static void unlink_from_collision_chain(unordered_set* set,
+                                        unordered_set_entry* prev_entry,
+                                        unordered_set_entry* entry_to_unlink)
+{
+    size_t index;
+
+    if (prev_entry)
+    {
+        prev_entry->chain_next = entry_to_unlink->chain_next;
+    }
+    else
+    {
+        index = set->hash_function(entry_to_unlink->key) & set->mask;
+        set->table[index] = entry_to_unlink->chain_next;
+    }
+}
+
+/* Unlinks the given entry from its predecessor entry in the linked list: */
+static void unlink_from_predecessor_entry(unordered_set* set,
+                                          unordered_set_entry* entry)
+{
+    unordered_set_entry* prev_entry = entry->prev;
+
+    if (prev_entry)
+    {
+        prev_entry->next = entry->next;
+
+        if (entry->next)
+        {
+            entry->next->prev = prev_entry;
+        }
+    } 
+    else
+    {
+        set->head = entry->next;
+
+        if (set->head)
+        {
+            set->head->prev = NULL;
+        }
+    }
+}
+
+/* Unlinks the given entry from its successor entry in the linked list: */
+static void unlink_from_successor_entry(unordered_set* set,
+                                        unordered_set_entry* entry)
+{
+    unordered_set_entry* next_entry = entry->next;
+
+    if (next_entry)
+    {
+        next_entry->prev = entry->prev;
+
+        if (entry->prev)
+        {
+            entry->prev->next = next_entry;
+        }
+    }
+    else
+    {
+        set->tail = entry->prev;
+
+        if (set->tail)
+        {
+            set->tail->next = NULL;
+        }
+    }
 }
 
 int unordered_set_remove(unordered_set* set, void* key)
 {
     size_t index;
+    size_t hash_value;
     unordered_set_entry* prev_entry;
     unordered_set_entry* current_entry;
 
-    index = set->hash_function(key) & set->mask;
-    prev_entry = NULL;
+    if (!set)
+    {
+        return FALSE;
+    }
 
-    for (current_entry = set->table[index];
+    hash_value = set->hash_function(key);
+    index = hash_value & set->mask;
+
+    for (current_entry = set->table[index], prev_entry = NULL;
         current_entry;
+        prev_entry = current_entry,
         current_entry = current_entry->chain_next)
     {
-        if (set->equals_function(key, current_entry->key))
+        if (hash_value == current_entry->hash_value
+            && set->equals_function(key, current_entry->key))
         {
-            if (prev_entry)
-            {
-                /* Omit the 'p_current_entry' in the collision chain. */
-                prev_entry->chain_next = current_entry->chain_next;
-            }
-            else
-            {
-                set->table[index] = current_entry->chain_next;
-            }
+            /* Unlink from the collision chain: */
+            unlink_from_collision_chain(set, prev_entry, current_entry);
 
-            /* Unlink from the global iteration chain. */
-            if (current_entry->prev)
-            {
-                current_entry->prev->next = current_entry->next;
-            }
-            else
-            {
-                set->head = current_entry->next;
-            }
-
-            if (current_entry->next)
-            {
-                current_entry->next->prev = current_entry->prev;
-            }
-            else
-            {
-                set->tail = current_entry->prev;
-            }
-
+            /* Unlink from linked list: */
+            unlink_from_predecessor_entry(set, current_entry);
+            unlink_from_successor_entry  (set, current_entry);
+            
+            /* Update the set state: */
             set->size--;
             set->mod_count++;
             free(current_entry);
-            return true;
+            return TRUE;
         }
 
         prev_entry = current_entry;
     }
 
-    return false;
+    return FALSE;
 }
 
 void unordered_set_clear(unordered_set* set)
@@ -277,17 +375,17 @@ void unordered_set_clear(unordered_set* set)
     }
 
     entry = set->head;
-
+    
     while (entry)
     {
-        index = set->hash_function(entry->key) & set->mask;
+        index = entry->hash_value & set->mask;
         next_entry = entry->next;
         free(entry);
         entry = next_entry;
         set->table[index] = NULL;
     }
 
-    set->mod_count += set->size;
+    set->mod_count++;
     set->size = 0;
     set->head = NULL;
     set->tail = NULL;
@@ -301,11 +399,12 @@ size_t unordered_set_size(unordered_set* set)
 int unordered_set_is_healthy(unordered_set* set)
 {
     size_t counter;
+    size_t i;
     unordered_set_entry* entry;
 
     if (!set)
     {
-        return false;
+        return FALSE;
     }
 
     counter = 0;
@@ -313,15 +412,30 @@ int unordered_set_is_healthy(unordered_set* set)
 
     if (entry && entry->prev)
     {
-        return false;
+        return FALSE;
     }
 
+    ASSERT(set->mask == set->table_capacity - 1);
+    
     for (; entry; entry = entry->next)
     {
         counter++;
     }
 
-    return counter == set->size;
+    ASSERT(counter == set->size);
+
+    for (i = 0; i < set->table_capacity; i++)
+    {
+        entry = set->table[i];
+
+        while (entry)
+        {
+            ASSERT(entry->hash_value ==
+                set->hash_function(entry->key) & set->mask);
+            
+            entry = entry->chain_next;
+        }
+    }
 }
 
 void unordered_set_destroy(unordered_set* set)
@@ -349,9 +463,9 @@ void unordered_set_free(unordered_set** p_set)
 void unordered_set_iterator_init(unordered_set* set, 
                                  unordered_set_iterator* iterator)
 {
-    iterator->set = set;
-    iterator->iterated_count = 0;
-    iterator->next_entry = set->head;
+    iterator->set                = set;
+    iterator->iterated_count     = 0;
+    iterator->next_entry         = set->head;
     iterator->expected_mod_count = set->mod_count;
 }
 
@@ -470,6 +584,27 @@ static size_t str_hash_function(void* p)
     return sum;
 }
 
+static void unordered_set_test_debug_clear()
+{
+    unordered_set* set = unordered_set_alloc(1, 
+                                             1.0f, 
+                                             int_hash_function, 
+                                             int_equals);
+    int i;
+
+    puts("        unordered_set_test_debug_clear()");
+
+    for (i = 0; i < 10; i++)
+    {
+        unordered_set_add(set, (void*)(intptr_t) i);
+    }
+
+    unordered_set_remove(set, 0);
+    unordered_set_remove(set, 9);
+    unordered_set_clear(set);
+    unordered_set_free(set);
+}
+
 static void unordered_set_test_add()
 {
     unordered_set* set = unordered_set_alloc(1,
@@ -530,21 +665,31 @@ static void unordered_set_test_contains()
     for (i = 0; i < 100; i++)
     {
         ASSERT(unordered_set_add(set, (void*)(intptr_t) i));
+        ASSERT(unordered_set_is_healthy(set));
     }
 
     for (i = 99; i >= 0; i--)
     {
-        ASSERT(unordered_set_contains(set, (void*)(intptr_t) i));
+        ASSERT(unordered_set_is_healthy(set));
+        ASSERT(unordered_set_contains(set, (void*)(intptr_t)i));
+        ASSERT(unordered_set_is_healthy(set));
     }
 
     for (i = 50; i < 100; i++)
     {
-        printf("%d\n", i);
-        ASSERT(unordered_set_remove(set,    (void*)(intptr_t) i));
+        ASSERT(unordered_set_is_healthy(set));
+        ASSERT(unordered_set_contains(set, (void*)(intptr_t) i));
+
+        ASSERT(unordered_set_is_healthy(set));
+        ASSERT(unordered_set_remove(set, (void*)(intptr_t) i));
+        ASSERT(unordered_set_is_healthy(set));
+
         ASSERT(!unordered_set_contains(set, (void*)(intptr_t) i));
+        ASSERT(unordered_set_is_healthy(set));
     }
 
-    unordered_set_free(set);
+    puts("yeah");
+    unordered_set_free(&set);
 }
 
 static void unordered_set_test_remove()
@@ -566,7 +711,7 @@ static void unordered_set_test_remove()
     ASSERT(unordered_set_remove(set, (void*) 2));
     ASSERT(!unordered_set_contains(set, (void*) 2));
 
-    unordered_set_free(set);
+    unordered_set_free(&set);
 }
 
 static void unordered_set_test_clear()
@@ -630,10 +775,31 @@ static void unordered_set_test_iterator()
     ASSERT(unordered_set_iterator_has_next(iterator) == FALSE);
 }
 
+void debug_mask()
+{
+    unordered_set set;
+    unordered_set_init(&set,
+        10,
+        1.0f,
+        int_hash_function,
+        int_equals);
+
+    int i = 0;
+
+    for (i = 0; i < 100; i++)
+    {
+        unordered_set_add(&set, i);
+    }
+    unordered_set_remove(&set, 55);
+    unordered_set_destroy(&set);
+    ASSERT(0 == unordered_set_size(&set));
+}
+
 void unordered_set_test()
 {
     puts("    unordered_set_test()");
-
+    debug_mask();
+    unordered_set_test_debug_clear();
     unordered_set_test_add();
     unordered_set_test_contains();
     unordered_set_test_remove();
