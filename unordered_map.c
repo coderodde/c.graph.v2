@@ -127,7 +127,7 @@ unordered_map* unordered_map_alloc(size_t initial_capacity,
     return map;
 }
 
-static int ensure_capacity(unordered_map* map)
+static void ensure_capacity(unordered_map* map)
 {
     size_t new_capacity;
     size_t new_mask;
@@ -172,7 +172,6 @@ void* unordered_map_put(unordered_map* map, void* key, void* value)
     size_t index;
     size_t hash_value;
     void* old_value;
-    int recompute_hash_table;
     unordered_map_entry* entry;
 
     if (!map)
@@ -180,6 +179,7 @@ void* unordered_map_put(unordered_map* map, void* key, void* value)
         return NULL;
     }
 
+    ensure_capacity(map); /* Might update map->mask. */
     hash_value = map->hash_function(key);
     index = hash_value & map->mask;
 
@@ -194,15 +194,6 @@ void* unordered_map_put(unordered_map* map, void* key, void* value)
         }
     }
 
-    recompute_hash_table = ensure_capacity(map);
-
-    if (recompute_hash_table)
-    {
-        /* Recompute the index since there is possibility of 
-           mask being changed. */
-        index = hash_value & map->mask;
-    }
-
     entry = unordered_map_entry_alloc(key, value);
     entry->chain_next = map->table[index];
     map->table[index] = entry;
@@ -212,7 +203,6 @@ void* unordered_map_put(unordered_map* map, void* key, void* value)
     {
         map->head = entry;
         map->tail = entry;
-        entry->next = NULL;
         entry->prev = NULL;
     }
     else
@@ -220,9 +210,9 @@ void* unordered_map_put(unordered_map* map, void* key, void* value)
         map->tail->next = entry;
         entry->prev = map->tail;
         map->tail = entry;
-        entry->next = NULL;
     }
 
+    entry->next = NULL;
     map->size++;
     map->mod_count++;
     return NULL;
@@ -232,7 +222,7 @@ int unordered_map_contains_key(unordered_map* map, void* key)
 {
     size_t index;
     size_t hash_value;
-    unordered_map_entry* entry;
+    unordered_map_entry* p_entry;
 
     if (!map)
     {
@@ -242,10 +232,10 @@ int unordered_map_contains_key(unordered_map* map, void* key)
     hash_value = map->hash_function(key);
     index = hash_value & map->mask;
 
-    for (entry = map->table[index]; entry; entry = entry->chain_next)
+    for (p_entry = map->table[index]; p_entry; p_entry = p_entry->chain_next)
     {
-        if (entry->key_hash_value == hash_value
-            && map->equals_function(key, entry->key))
+        if (p_entry->key_hash_value == hash_value
+            && map->equals_function(key, p_entry->key))
         {
             return TRUE;
         }
@@ -280,6 +270,73 @@ void* unordered_map_get(unordered_map* map, void* key)
     return NULL;
 }
 
+static void unlink_from_collision_chain(unordered_map* map,
+    unordered_map_entry* prev_entry,
+    unordered_map_entry* entry_to_unlink)
+{
+    size_t index;
+
+    if (prev_entry)
+    {
+        prev_entry->chain_next = entry_to_unlink->chain_next;
+    }
+    else
+    {
+        index = entry_to_unlink->key_hash_value & map->mask;
+        map->table[index] = entry_to_unlink->chain_next;
+    }
+}
+
+static void unlink_from_predecessor_entry(unordered_map* map,
+                                          unordered_map_entry* entry)
+{
+    unordered_map_entry* prev_entry = entry->prev;
+
+    if (prev_entry)
+    {
+        prev_entry->next = entry->next;
+
+        if (entry->next)
+        {
+            entry->next->prev = prev_entry;
+        }
+    }
+    else
+    {
+        map->head = entry->next;
+
+        if (map->head)
+        {
+            map->head->prev = NULL;
+        }
+    }
+}
+
+static void unlink_from_successor_entry(unordered_map* map,
+                                        unordered_map_entry* entry)
+{
+    unordered_map_entry* next_entry = entry->next;
+
+    if (next_entry)
+    {
+        next_entry->prev = entry->prev;
+
+        if (entry->prev)
+        {
+            entry->prev->next = next_entry;
+        }
+    }
+    else
+    {
+        map->tail = entry->prev;
+
+        if (map->tail)
+        {
+            map->tail->next = NULL;
+        }
+    }
+}
+
 void* unordered_map_remove(unordered_map* map, void* key)
 {
     void*  value;
@@ -304,48 +361,15 @@ void* unordered_map_remove(unordered_map* map, void* key)
         if (hash_value == current_entry->key_hash_value
             && map->equals_function(key, current_entry->key))
         {
-
-        }
-
-        if (map->equals_function(key, current_entry->key))
-        {
-            if (prev_entry)
-            {
-                /* Omit the 'p_current_entry' in the collision chain. */
-                prev_entry->chain_next = current_entry->chain_next;
-            }
-            else
-            {
-                map->table[index] = current_entry->chain_next;
-            }
-
-            /* Unlink from the global iteration chain. */
-            if (current_entry->prev)
-            {
-                current_entry->prev->next = current_entry->next;
-            }
-            else
-            {
-                map->head = current_entry->next;
-            }
-
-            if (current_entry->next)
-            {
-                current_entry->next->prev = current_entry->prev;
-            }
-            else
-            {
-                map->tail = current_entry->prev;
-            }
-
             value = current_entry->value;
+            unlink_from_collision_chain(map, prev_entry, current_entry);
+            unlink_from_predecessor_entry(map, current_entry);
+            unlink_from_successor_entry(map, current_entry);
             map->size--;
             map->mod_count++;
             free(current_entry);
             return value;
         }
-
-        prev_entry = current_entry;
     }
 
     return NULL;
@@ -366,14 +390,14 @@ void unordered_map_clear(unordered_map* map)
 
     while (entry)
     {
-        index = map->hash_function(entry->key) & map->mask;
+        index = entry->key_hash_value & map->mask;
         next_entry = entry->next;
         free(entry);
         entry = next_entry;
         map->table[index] = NULL;
     }
 
-    map->mod_count += map->size;
+    map->mod_count++;
     map->size = 0;
     map->head = NULL;
     map->tail = NULL;
@@ -387,11 +411,14 @@ size_t unordered_map_size(unordered_map* map)
 int unordered_map_is_healthy(unordered_map* map)
 {
     size_t counter;
+    size_t i;
+    size_t hash_value_1;
+    size_t hash_value_2;
     unordered_map_entry* entry;
     
     if (!map)
     {
-        return false;
+        return FALSE;
     }
 
     counter = 0;
@@ -399,7 +426,7 @@ int unordered_map_is_healthy(unordered_map* map)
 
     if (entry && entry->prev)
     {
-        return false;
+        return FALSE;
     }
 
     for (; entry; entry = entry->next)
@@ -407,10 +434,33 @@ int unordered_map_is_healthy(unordered_map* map)
         counter++;
     }
 
-    return counter == map->size;
+    if (counter != map->size)
+    {
+        return FALSE;
+    }
+
+    for (i = 0; i < map->table_capacity; i++)
+    {
+        entry = map->table[i];
+
+        while (entry)
+        {
+            hash_value_1 = entry->key_hash_value;
+            hash_value_2 = map->hash_function(entry->key);
+
+            if (hash_value_1 != hash_value_2)
+            {
+                return FALSE;
+            }
+
+            entry = entry->chain_next;
+        }
+    }
+
+    return TRUE;
 }
 
-void unordered_map_free(unordered_map* map)
+void unordered_map_destroy(unordered_map* map)
 {
     if (!map)
     {
@@ -419,35 +469,53 @@ void unordered_map_free(unordered_map* map)
 
     unordered_map_clear(map);
     free(map->table);
-    free(map);
+    map->table = NULL;
+}
+
+void unordered_map_free(unordered_map** p_map)
+{
+    if (!*p_map)
+    {
+        return;
+    }
+
+    unordered_map_destroy(*p_map);
+    free(*p_map);
+    *p_map = NULL;
+}
+
+void unordered_map_iterator_init(unordered_map* map,
+                                 unordered_map_iterator* iterator)
+{
+    iterator->map                = map;
+    iterator->iterated_count     = 0;
+    iterator->next_entry         = map->head;
+    iterator->expected_mod_count = map->mod_count;
 }
 
 unordered_map_iterator*
 unordered_map_iterator_alloc(unordered_map* map)
 {
-    unordered_map_iterator* p_ret;
+    unordered_map_iterator* iterator;
 
     if (!map)
     {
         return NULL;
     }
 
-    p_ret = malloc(sizeof(*p_ret));
+    iterator = (unordered_map_iterator*)
+                malloc(sizeof(*iterator));
 
-    if (!p_ret)
+    if (!iterator)
     {
         return NULL;
     }
 
-    p_ret->map = map;
-    p_ret->iterated_count = 0;
-    p_ret->next_entry = map->head;
-    p_ret->expected_mod_count = map->mod_count;
-
-    return p_ret;
+    unordered_map_iterator_init(map, iterator);
+    return iterator;
 }
 
-int unordered_map_iterator_has_next(unordered_map_iterator* iterator)
+size_t unordered_map_iterator_has_next(unordered_map_iterator* iterator)
 {
     if (!iterator)
     {
@@ -468,17 +536,17 @@ int unordered_map_iterator_next(unordered_map_iterator* iterator,
 {
     if (!iterator)
     {
-        return false;
+        return FALSE;
     }
 
     if (!iterator->next_entry)
     {
-        return false;
+        return FALSE;
     }
 
     if (unordered_map_iterator_is_disturbed(iterator))
     {
-        return false;
+        return FALSE;
     }
 
     *key_pointer = iterator->next_entry->key;

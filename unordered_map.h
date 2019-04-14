@@ -116,9 +116,14 @@ extern "C" {
     unordered_map_iterator* unordered_map_iterator_alloc(unordered_map* map);
 
     /***************************************************************************
+    * Initializes a given unordered map iterator.                              *
+    ***************************************************************************/
+    void unordered_map_iterator_init(unordered_map* p_map);
+
+    /***************************************************************************
     * Returns the number of keys not yet iterated over.                        *
     ***************************************************************************/
-    int unordered_map_iterator_has_next(unordered_map_iterator* iterator);
+    size_t unordered_map_iterator_has_next(unordered_map_iterator* iterator);
 
     /***************************************************************************
     * Loads the next entry in the iteration order.                             *

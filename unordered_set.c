@@ -68,17 +68,17 @@ int unordered_set_init(unordered_set* p_memory,
         return FALSE;
     }
 
-    initial_capacity           = fix_initial_capacity(initial_capacity);
-    load_factor                = fix_load_factor(load_factor);
-    p_memory->hash_function    = p_hash_function;
-    p_memory->equals_function  = p_equals_function;
-    p_memory->table_capacity   = initial_capacity;
-    p_memory->load_factor      = load_factor;
-    p_memory->head             = NULL;
-    p_memory->tail             = NULL;
-    p_memory->size             = 0;
-    p_memory->mod_count        = 0;
-    p_memory->table            = 
+    initial_capacity          = fix_initial_capacity(initial_capacity);
+    load_factor               = fix_load_factor(load_factor);
+    p_memory->hash_function   = p_hash_function;
+    p_memory->equals_function = p_equals_function;
+    p_memory->table_capacity  = initial_capacity;
+    p_memory->load_factor     = load_factor;
+    p_memory->head            = NULL;
+    p_memory->tail            = NULL;
+    p_memory->size            = 0;
+    p_memory->mod_count       = 0;
+    p_memory->table           = 
         calloc(p_memory->table_capacity,
                sizeof(p_memory->table[0]));
 
@@ -123,7 +123,7 @@ unordered_set* unordered_set_alloc(size_t initial_capacity,
     return set;
 }
 
-static int ensure_capacity(unordered_set* set)
+static void nsure_capacity(unordered_set* set)
 {
     size_t new_capacity;
     size_t new_mask;
@@ -167,7 +167,6 @@ int unordered_set_add(unordered_set* set, void* key)
 {
     size_t index;
     size_t hash_value;
-    int recompute_hash_table;
     unordered_set_entry* entry = unordered_set_entry_alloc(key);
 
     if (!entry)
@@ -175,6 +174,7 @@ int unordered_set_add(unordered_set* set, void* key)
         return FALSE;
     }
 
+    ensure_capacity(set); /* Might upate set->mask. */
     hash_value = set->hash_function(key);
     index = hash_value & set->mask;
 
@@ -190,13 +190,6 @@ int unordered_set_add(unordered_set* set, void* key)
         }
     }
 
-    if (recompute_hash_table = ensure_capacity(set))
-    {
-        /* Recompute the index since it is possibly changed by 
-          'ensure_capacity' */
-        index = hash_value & set->mask;
-    }
-
     entry->chain_next = set->table[index];
     entry->hash_value = hash_value;
     set->table[index] = entry;
@@ -207,17 +200,16 @@ int unordered_set_add(unordered_set* set, void* key)
         set->head = entry;
         set->tail = entry;
         entry->prev = NULL;
-        entry->next = NULL;
     }
     else
     {
         /* Let 'entry' be at the tail: */
         set->tail->next = entry;
         entry->prev = set->tail;
-        entry->next = NULL;
         set->tail = entry;
     }
 
+    entry->next = NULL;
     set->size++;
     set->mod_count++;
     return TRUE; 
@@ -263,7 +255,7 @@ static void unlink_from_collision_chain(unordered_set* set,
     }
     else
     {
-        index = set->hash_function(entry_to_unlink->key) & set->mask;
+        index = entry_to_unlink->hash_value & set->mask;
         set->table[index] = entry_to_unlink->chain_next;
     }
 }
@@ -356,8 +348,6 @@ int unordered_set_remove(unordered_set* set, void* key)
             free(current_entry);
             return TRUE;
         }
-
-        prev_entry = current_entry;
     }
 
     return FALSE;
@@ -430,8 +420,7 @@ int unordered_set_is_healthy(unordered_set* set)
 
         while (entry)
         {
-            ASSERT(entry->hash_value ==
-                set->hash_function(entry->key) & set->mask);
+            ASSERT(entry->hash_value == set->hash_function(entry->key));
             
             entry = entry->chain_next;
         }
@@ -446,9 +435,6 @@ void unordered_set_destroy(unordered_set* set)
     }
 
     unordered_set_clear(set);
-    set->head = NULL;
-    set->tail = NULL;
-    set->size = 0;
     free(set->table);
     set->table = NULL;
 }
@@ -504,24 +490,24 @@ int unordered_set_iterator_next(unordered_set_iterator* iterator,
 {
     if (!iterator)
     {
-        return false;
+        return FALSE;
     }
 
     if (!iterator->next_entry)
     {
-        return false;
+        return FALSE;
     }
 
     if (unordered_set_iterator_is_disturbed(iterator))
     {
-        return false;
+        return FALSE;
     }
 
     *key_pointer = iterator->next_entry->key;
     iterator->iterated_count++;
     iterator->next_entry = iterator->next_entry->next;
 
-    return true;
+    return TRUE;
 }
 
 int unordered_set_iterator_is_disturbed(unordered_set_iterator* iterator)
