@@ -10,4 +10,6 @@ list* bidirectional_breadth_first_search(void* source_node,
                                          size_t (*hash_function)(void*),
                                          int (*equals_function)(void*, void*));
 
+void bidirectional_breadht_first_search_test();
+
 #endif /* BIDIRECTIONAL_BREADTH_FIRST_SEARCH_H */

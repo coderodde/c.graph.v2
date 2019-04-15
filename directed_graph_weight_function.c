@@ -9,8 +9,10 @@ typedef struct directed_graph_weight_function_state {
     int (*p_equals_function)(void*, void*);
 } directed_graph_weight_function_state;
 
+
 static size_t INITIAL_CAPACITY = 16;
 static float LOAD_FACTOR = 1.0f;
+
 
 directed_graph_weight_function*
 directed_graph_weight_function_alloc(size_t(*p_hash_function)(void*),
@@ -43,6 +45,7 @@ directed_graph_weight_function_alloc(size_t(*p_hash_function)(void*),
     p_ret->state->p_equals_function = p_equals_function;
     return p_ret;
 }
+
 
 int directed_graph_weight_function_put
 (directed_graph_weight_function* p_weight_function,
@@ -88,6 +91,7 @@ int directed_graph_weight_function_put
 
     return TRUE;
 }
+
 
 void* directed_graph_weight_function_get(
     directed_graph_weight_function* p_function,

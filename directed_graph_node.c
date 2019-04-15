@@ -18,7 +18,7 @@ size_t directed_graph_node_hash_function(void* v)
     return (size_t)((directed_graph_node*) v)->m_id;
 }
 
-int directed_graph_nodes_equals_function(void* a, void* b)
+int directed_graph_nodes_equal_function(void* a, void* b)
 {
     return ((directed_graph_node*) a)->m_id ==
            ((directed_graph_node*) b)->m_id;
@@ -77,7 +77,7 @@ directed_graph_node* directed_graph_node_alloc(int id)
                              5,
                              1.0f,
                              directed_graph_node_hash_function,
-                             directed_graph_nodes_equals_function);
+                             directed_graph_nodes_equal_function);
 
     return p_node;
 }

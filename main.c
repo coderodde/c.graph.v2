@@ -12,7 +12,6 @@
 
 #define _C_GRAPH_V2_TEST
 #define _C_GRAPH_V2_BENCHMARK
-#undef  _C_GRAPH_V2_BENCHMARK
 
 #define FALSE 0
 #define TRUE 1
@@ -24,6 +23,7 @@ static void test_all()
     list_test();
     unordered_map_test();
     unordered_set_test();
+    bidirectional_breadth_first_search_test();
     PRINT_TEST_RESULTS;
     puts("--- Done testing ---");
 }
