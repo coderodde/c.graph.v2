@@ -54,8 +54,8 @@ extern "C" {
     int unordered_map_init(unordered_map* p_map,
                            size_t initial_capacity,
                            float load_factor,
-                           size_t(*p_hash_function)(void*),
-                           int(*p_equals_function(void*, void*));
+                           size_t (*p_hash_function)(void*),
+                           int (*p_equals_function)(void*, void*));
 
     /***************************************************************************
     * If p_map does not contain the key p_key, inserts it in the map,          *
@@ -118,7 +118,8 @@ extern "C" {
     /***************************************************************************
     * Initializes a given unordered map iterator.                              *
     ***************************************************************************/
-    void unordered_map_iterator_init(unordered_map* p_map);
+    void unordered_map_iterator_init(unordered_map* p_map,
+                                     unordered_map_iterator* iterator);
 
     /***************************************************************************
     * Returns the number of keys not yet iterated over.                        *

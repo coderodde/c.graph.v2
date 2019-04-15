@@ -39,9 +39,8 @@ static void directed_graph_children_iterator_init(
     child_node_iterator* cni, 
     void* node)
 {
-    cni->state = 
-        (void*)
-        unordered_set_iterator_alloc((directed_graph_node*) node);
+    unordered_set* p_node_children_set = directed_graph_node_children_set(node);
+    cni->state = unordered_set_iterator_alloc(p_node_children_set);
 }
 
 static int directed_graph_children_iterator_has_next(

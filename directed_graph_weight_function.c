@@ -10,7 +10,7 @@ typedef struct directed_graph_weight_function_state {
 } directed_graph_weight_function_state;
 
 static size_t INITIAL_CAPACITY = 16;
-static size_t LOAD_FACTOR = 1.0f;
+static float LOAD_FACTOR = 1.0f;
 
 directed_graph_weight_function*
 directed_graph_weight_function_alloc(size_t(*p_hash_function)(void*),
@@ -139,8 +139,8 @@ void directed_graph_weight_function_free
             free(p_weight);
         }
 
-        unordered_map_free(p_map);
+        unordered_map_free(&p_map);
     }
 
-    unordered_map_free(p_function->state->p_first_level_map);
+    unordered_map_free(&p_function->state->p_first_level_map);
 }

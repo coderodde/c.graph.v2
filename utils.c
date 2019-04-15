@@ -79,7 +79,6 @@ unweighted_graph_data* create_unweighted_random_graph(
     int (*equals_function)(void*, void*))
 {
     size_t                 i;
-    char*                  p_name;
     directed_graph_node*   p_tail;
     directed_graph_node*   p_head;
     unordered_map*         p_point_map;
@@ -121,9 +120,7 @@ unweighted_graph_data* create_unweighted_random_graph(
 
     for (i = 0; i < nodes; ++i)
     {
-        p_name = calloc(30, sizeof(char));
-        sprintf(p_name, "%lu", (unsigned long) i);
-        p_node_array[i] = directed_graph_node_alloc(p_name);
+        p_node_array[i] = directed_graph_node_alloc(i);
         unordered_map_put(p_point_map,
             p_node_array[i],
             random_point(maxx, maxy, maxz));

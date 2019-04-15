@@ -137,16 +137,16 @@ static void ensure_capacity(unordered_map* map)
 
     if (map->size < map->max_allowed_size)
     {
-        return FALSE;
+        return;
     }
 
-    new_capacity = 2 * map->table_capacity;
+    new_capacity = map->table_capacity << 1;
     new_mask = new_capacity - 1;
     new_table = calloc(new_capacity, sizeof(unordered_map_entry*));
 
     if (!new_table)
     {
-        return FALSE;
+        return;
     }
 
     /* Rehash the entries. */
@@ -163,8 +163,6 @@ static void ensure_capacity(unordered_map* map)
     map->table_capacity = new_capacity;
     map->mask           = new_mask;
     map->max_allowed_size = (size_t)(new_capacity * map->load_factor);
-
-    return TRUE;
 }
 
 void* unordered_map_put(unordered_map* map, void* key, void* value)
@@ -195,6 +193,7 @@ void* unordered_map_put(unordered_map* map, void* key, void* value)
     }
 
     entry = unordered_map_entry_alloc(key, value);
+    entry->key_hash_value = hash_value;
     entry->chain_next = map->table[index];
     map->table[index] = entry;
 
@@ -617,7 +616,7 @@ static void unordered_map_test_put()
     }
 
     ASSERT(unordered_map_is_healthy(map));
-    unordered_map_free(map);
+    unordered_map_free(&map);
 }
 
 static void unordered_map_test_get()
@@ -643,7 +642,7 @@ static void unordered_map_test_get()
         ASSERT(unordered_map_is_healthy(map));
     }
 
-    unordered_map_free(map);
+    unordered_map_free(&map);
 }
 
 static void unordered_map_test_contains_key()
@@ -672,7 +671,7 @@ static void unordered_map_test_contains_key()
     ASSERT(!unordered_map_contains_key(map, (void*) -3));
     ASSERT(!unordered_map_contains_key(map, (void*) 3));
 
-    unordered_map_free(map);
+    unordered_map_free(&map);
 }
 
 static void unordered_map_test_remove()
@@ -698,7 +697,7 @@ static void unordered_map_test_remove()
     ASSERT(unordered_map_size(map) == 97);
     ASSERT(unordered_map_is_healthy(map));
 
-    unordered_map_free(map);
+    unordered_map_free(&map);
 }
 
 static void unordered_map_test_clear()
@@ -724,7 +723,7 @@ static void unordered_map_test_clear()
 
     unordered_map_clear(map);
     ASSERT(unordered_map_size(map) == 0);
-    unordered_map_free(map);
+    unordered_map_free(&map);
 }
 
 static void unordered_map_test_iterator()
@@ -769,7 +768,7 @@ static void unordered_map_test_iterator()
     ASSERT(unordered_map_is_healthy(map));
 
     unordered_map_iterator_free(iter);
-    unordered_map_free(map);
+    unordered_map_free(&map);
 }
 
 void unordered_map_test()

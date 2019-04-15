@@ -41,7 +41,12 @@ extern "C" {
     /***************************************************************************
     * Initializes a given memory area to a directed graph node.                *
     ***************************************************************************/
-    void directed_graph_node_init(directed_graph_node* p_node, int id);
+    void directed_graph_node_init(directed_graph_node* p_node, 
+                                  int id,
+                                  size_t initial_capacity,
+                                  float load_factor,
+                                  size_t (*p_hash_function)(void*),
+                                  int (*p_equals_function)(void*, void*));
 
     /***************************************************************************
     * Creates an arc (p_tail, p_head) and returns true if the arc is actually  *

@@ -11,7 +11,7 @@
 
 static const int INITIAL_CAPACITY = 16;
 static const int MAXIMUM_NAME_STRING_LEN = 80;
-static const int MINIMUM_LOAD_FACTOR = 0.2f;
+static const float MINIMUM_LOAD_FACTOR = 0.2f;
 
 size_t directed_graph_node_hash_function(void* v)
 {
@@ -41,38 +41,6 @@ static float fix_load_factor(float requested_load_factor)
            requested_load_factor;
 }
 
-int directed_graph_node_construct(directed_graph_node* p_node,
-                                  int      id,
-                                  size_t   initial_capacity,
-                                  float    load_factor,
-                                  size_t (*hash_function)(void*),
-                                  int    (*equals_function)(void*, void*))
-{
-    directed_graph_node* node = (directed_graph_node*) p_node;
-
-    if (!p_node
-        || fix_initial_capacity(initial_capacity)
-        || fix_load_factor(load_factor)
-        || !hash_function
-        || !equals_function)
-    {
-        return FALSE;
-    }
-
-    node->m_id = id;
-    unordered_set_init(&node->m_child_node_set,
-                       initial_capacity, 
-                       load_factor, 
-                       hash_function, 
-                       equals_function);
-
-    unordered_set_init(&node->m_parent_node_set,
-                       initial_capacity,
-                       load_factor,
-                       hash_function,
-                       equals_function);
-}
-
 void directed_graph_node_init(directed_graph_node* p_node, 
                               int id,
                               size_t initial_capacity,                          
@@ -81,7 +49,7 @@ void directed_graph_node_init(directed_graph_node* p_node,
                               int (*p_equals_function)(void*, void*))
 {
     p_node->m_id = id;
-
+    
     unordered_set_init(&p_node->m_child_node_set,
                        initial_capacity,
                        load_factor,
@@ -109,7 +77,7 @@ directed_graph_node* directed_graph_node_alloc(int id)
                              5,
                              1.0f,
                              directed_graph_node_hash_function,
-                             directed_graph_node_hash_function);
+                             directed_graph_nodes_equals_function);
 
     return p_node;
 }
@@ -220,21 +188,6 @@ void directed_graph_node_destruct(directed_graph_node* p_node)
     }
 }
 
-void directed_graph_node_free(directed_graph_node** p_node)
-{
-    directed_graph_node* node;
-
-    if (!p_node || !*p_node) 
-    {
-        return;
-    }
-
-    node = (directed_graph_node*) *p_node;
-    directed_graph_node_destruct(node);
-    free(node);
-    *p_node = NULL;
-}
-
 static void directed_graph_node_test_add_arc()
 {
     directed_graph_node* node_a;
@@ -243,9 +196,9 @@ static void directed_graph_node_test_add_arc()
 
     puts("        directed_graph_node_test_add_arc()");
 
-    node_a = directed_graph_node_alloc("a");
-    node_b = directed_graph_node_alloc("b");
-    node_c = directed_graph_node_alloc("c");
+    node_a = directed_graph_node_alloc(1);
+    node_b = directed_graph_node_alloc(2);
+    node_c = directed_graph_node_alloc(3);
 
     ASSERT(directed_graph_node_add_arc(node_a, node_b));
     ASSERT(directed_graph_node_add_arc(node_b, node_c));
@@ -266,9 +219,9 @@ static void directed_graph_node_test_remove_arc()
     directed_graph_node* node_b;
     directed_graph_node* node_c;
 
-    node_a = directed_graph_node_alloc("a");
-    node_b = directed_graph_node_alloc("b");
-    node_c = directed_graph_node_alloc("c");
+    node_a = directed_graph_node_alloc(1);
+    node_b = directed_graph_node_alloc(2);
+    node_c = directed_graph_node_alloc(3);
 
     ASSERT(directed_graph_node_add_arc(node_a, node_b));
     ASSERT(directed_graph_node_has_arc(node_a, node_b));
@@ -286,9 +239,9 @@ static void directed_graph_node_test_clear()
     directed_graph_node* node_c;
     unordered_set* set;
 
-    node_a = directed_graph_node_alloc("a");
-    node_b = directed_graph_node_alloc("b");
-    node_c = directed_graph_node_alloc("c");
+    node_a = directed_graph_node_alloc(1);
+    node_b = directed_graph_node_alloc(2);
+    node_c = directed_graph_node_alloc(3);
     
     ASSERT(directed_graph_node_add_arc(node_a, node_b));
     ASSERT(directed_graph_node_add_arc(node_b, node_c));

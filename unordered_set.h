@@ -108,8 +108,9 @@ extern "C" {
     /***************************************************************************
     * Constructs a set iterator view over the set.                             *
     ***************************************************************************/
-    void unordered_set_iterator_init(unordered_set*  p_set);
-
+    void unordered_set_iterator_init(unordered_set*  p_set,
+                                     unordered_set_iterator* p_iterator);
+    
     /***************************************************************************
     * Returns the number of elements not yet iterated over.                    *
     ***************************************************************************/
