@@ -77,7 +77,8 @@ static int directed_graph_parents_iterator_has_next(parent_node_iterator* pni)
 static void* directed_graph_parents_iterator_next(parent_node_iterator* pni)
 {
     void* value;
-    unordered_set_iterator_next(pni->state, &value);
+
+    unordered_set_iterator_next((unordered_set_iterator*) pni->state, &value);
     return value;
 }
 
@@ -88,7 +89,7 @@ static void directed_graph_parents_iterator_free(parent_node_iterator* pni)
 
 static void benchmark_unweighted_general_graph()
 {
-    child_node_iterator children_iterator;
+    child_node_iterator  children_iterator;
     parent_node_iterator parents_iterator;
     directed_graph_node* source_node;
     directed_graph_node* target_node;

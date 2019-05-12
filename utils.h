@@ -23,13 +23,13 @@ extern "C" {
         /**********************************************************************
         * Performs whatever initialization are needed on behalf of the state. *
         **********************************************************************/
-        void(*child_node_iterator_init)(struct child_node_iterator* me,
-            void* node);
+        void(*child_node_iterator_init)(struct child_node_iterator* me, 
+                                        void* node);
 
         /**************************************************************
         * Signals whether there are more child nodes to iterate over. *
         **************************************************************/
-        int(*child_node_iterator_has_next)(struct child_node_iterator* me);
+        int (*child_node_iterator_has_next)(struct child_node_iterator* me);
 
         /******************************
         * Return the next child node. *

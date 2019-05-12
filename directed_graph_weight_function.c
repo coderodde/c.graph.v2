@@ -121,7 +121,7 @@ void directed_graph_weight_function_free
     unordered_map*          p_map;
     directed_graph_node*    p_node;
     directed_graph_node*    p_node_2;
-    double*                   p_weight;
+    double*                 p_weight;
 
     if (!p_function) return;
 

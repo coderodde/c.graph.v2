@@ -10,7 +10,11 @@ extern "C" {
 #endif
 
     typedef struct list {
-        struct list_state* state;
+        void** m_storage;
+        size_t m_size;
+        size_t m_capacity;
+        size_t m_head;
+        size_t m_mask;
     } list;
 
     /***************************************************************************

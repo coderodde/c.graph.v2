@@ -188,6 +188,12 @@ void directed_graph_node_destruct(directed_graph_node* p_node)
     }
 }
 
+void directed_graph_node_free(directed_graph_node* p_node)
+{
+    directed_graph_node_destruct(p_node);
+    free(p_node);
+}
+
 static void directed_graph_node_test_add_arc()
 {
     directed_graph_node* node_a;

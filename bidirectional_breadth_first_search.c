@@ -31,6 +31,7 @@ list* bidirectional_breadth_first_search(void* source_node,
     void* current_node;
     void* child_node;
     void* parent_node;
+    list* path;
     
     if (!source_node
         || !target_node
@@ -80,11 +81,18 @@ list* bidirectional_breadth_first_search(void* source_node,
         dist_a = (size_t) unordered_map_get(distance_a, queue_front(queue_a));
         dist_b = (size_t) unordered_map_get(distance_b, queue_front(queue_b));
 
-        if (touch_node && best_cost <= dist_a + dist_b)
+        if (touch_node && best_cost < dist_a + dist_b)
         {
-            return trace_back_path_bidirectional(touch_node,
+            path = trace_back_path_bidirectional(touch_node,
                                                  parents_a,
                                                  parents_b);
+            queue_free(queue_a);
+            queue_free(queue_b);
+            unordered_map_free(&parents_a);
+            unordered_map_free(&parents_b);
+            unordered_map_free(&distance_a);
+            unordered_map_free(&distance_b);
+            return path;
         }
          
         current_node = queue_pop_front(queue_a);
@@ -156,6 +164,13 @@ list* bidirectional_breadth_first_search(void* source_node,
 
         parent_iterator->parent_node_iterator_free(parent_iterator);
     }
+
+    queue_free(queue_a);
+    queue_free(queue_b);
+    unordered_map_free(&parents_a);
+    unordered_map_free(&parents_b);
+    unordered_map_free(&distance_a);
+    unordered_map_free(&distance_b);
 
     return NULL;
 }
@@ -271,4 +286,60 @@ void bidirectional_breadth_first_search_test()
     ASSERT(a == list_get(path, 0));
     ASSERT(b == list_get(path, 1));
     ASSERT(e == list_get(path, 2));
+
+
+
+    /****** Release memory: *******/
+    directed_graph_node_free(a);
+    directed_graph_node_free(b);
+    directed_graph_node_free(c);
+    directed_graph_node_free(d);
+    directed_graph_node_free(e);
+
+    list_free(path);
+}
+
+void bidirectional_breadth_first_search_test_2() 
+{
+    directed_graph_node* a = directed_graph_node_alloc(1);
+    directed_graph_node* b = directed_graph_node_alloc(2);
+    directed_graph_node* c = directed_graph_node_alloc(3);
+    directed_graph_node* d = directed_graph_node_alloc(4);
+    directed_graph_node* e = directed_graph_node_alloc(5);
+
+    child_node_iterator children_iterator;
+    parent_node_iterator parents_iterator;
+
+    /* Fill the child node generator interface: */
+    children_iterator.child_node_iterator_init =
+        directed_graph_children_iterator_init;
+
+    children_iterator.child_node_iterator_has_next =
+        directed_graph_children_iterator_has_next;
+
+    children_iterator.child_node_iterator_next =
+        directed_graph_children_iterator_next;
+
+    children_iterator.child_node_iterator_free =
+        directed_graph_children_iterator_free;
+
+    /* Fill the parent node generator interface: */
+    parents_iterator.parent_node_iterator_init =
+        directed_graph_parents_iterator_init;
+
+    parents_iterator.parent_node_iterator_has_next =
+        directed_graph_parents_iterator_has_next;
+
+    parents_iterator.parent_node_iterator_next =
+        directed_graph_parents_iterator_next;
+
+    parents_iterator.parent_node_iterator_free =
+        directed_graph_parents_iterator_free;
+
+    puts("    bidirectional_breadth_first_search_test()");
+
+    directed_graph_node_add_arc(a, b);
+    directed_graph_node_add_arc(b, c);
+    directed_graph_node_add_arc(c, d);
+    directed_graph_node_add_arc(d, e);
 }
